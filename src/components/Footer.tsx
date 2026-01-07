@@ -1,14 +1,18 @@
-import { Instagram, Twitter } from "lucide-react";
+import { Instagram, Twitter, MapPin, Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export const Footer = () => {
+  const scrollToSection = (sectionId: string) => {
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <footer className="bg-card border-t border-border">
       <div className="container mx-auto px-4 sm:px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
-          <div className="md:col-span-2">
+          <div>
             <div className="mb-4">
               <span className="text-3xl font-display font-semibold gradient-brand-text">
                 A | M
@@ -17,27 +21,69 @@ export const Footer = () => {
                 Chicago
               </p>
             </div>
-            <p className="text-muted-foreground max-w-sm mb-6">
+            <p className="text-muted-foreground text-sm mb-6">
               Premium streetwear rooted in Chicago. Designed for those who dare to aspire and manifest their vision.
             </p>
-            <div className="flex gap-4">
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-                <Instagram className="h-5 w-5" />
+            <div className="flex gap-3">
+              <Button variant="outline" size="icon" className="rounded-full border-border hover:border-primary hover:text-primary">
+                <Instagram className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-                <Twitter className="h-5 w-5" />
+              <Button variant="outline" size="icon" className="rounded-full border-border hover:border-primary hover:text-primary">
+                <Twitter className="h-4 w-4" />
               </Button>
             </div>
           </div>
 
-          {/* Links */}
+          {/* Shop Links */}
           <div>
             <h4 className="font-semibold mb-4">Shop</h4>
-            <ul className="space-y-3 text-muted-foreground">
-              <li><a href="#" className="hover:text-foreground transition-colors">All Products</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">Hoodies</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">T-Shirts</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">Joggers</a></li>
+            <ul className="space-y-3 text-sm text-muted-foreground">
+              <li>
+                <button onClick={() => scrollToSection("shop")} className="hover:text-foreground transition-colors">
+                  All Products
+                </button>
+              </li>
+              <li>
+                <button onClick={() => scrollToSection("collections")} className="hover:text-foreground transition-colors">
+                  Collections
+                </button>
+              </li>
+              <li>
+                <button onClick={() => scrollToSection("shop")} className="hover:text-foreground transition-colors">
+                  Hoodies & Crews
+                </button>
+              </li>
+              <li>
+                <button onClick={() => scrollToSection("shop")} className="hover:text-foreground transition-colors">
+                  T-Shirts
+                </button>
+              </li>
+              <li>
+                <button onClick={() => scrollToSection("shop")} className="hover:text-foreground transition-colors">
+                  Joggers
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h4 className="font-semibold mb-4">Contact</h4>
+            <ul className="space-y-3 text-sm text-muted-foreground">
+              <li className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-primary" />
+                <span>Chicago, IL</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-primary" />
+                <a href="mailto:info@amchicago.com" className="hover:text-foreground transition-colors">
+                  info@amchicago.com
+                </a>
+              </li>
+              <li className="flex items-center gap-2">
+                <Phone className="h-4 w-4 text-primary" />
+                <span>(312) 555-0123</span>
+              </li>
             </ul>
           </div>
 
@@ -45,18 +91,21 @@ export const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Stay Updated</h4>
             <p className="text-sm text-muted-foreground mb-4">
-              Get exclusive drops and updates.
+              Sign up to get updates on our launch and exclusive drops.
             </p>
             <div className="flex gap-2">
               <Input
                 type="email"
-                placeholder="Your email"
-                className="bg-secondary border-border"
+                placeholder="Email address"
+                className="bg-secondary border-border text-sm"
               />
               <Button className="gradient-brand text-primary-foreground shrink-0">
-                Join
+                →
               </Button>
             </div>
+            <p className="text-xs text-muted-foreground mt-3">
+              Coming Soon...
+            </p>
           </div>
         </div>
 
@@ -66,9 +115,9 @@ export const Footer = () => {
             © 2024 Aspire | Manifest. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-muted-foreground">
-            <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
-            <a href="#" className="hover:text-foreground transition-colors">Terms</a>
-            <a href="#" className="hover:text-foreground transition-colors">Shipping</a>
+            <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-foreground transition-colors">Terms of Service</a>
+            <a href="#" className="hover:text-foreground transition-colors">Shipping & Returns</a>
           </div>
         </div>
       </div>
