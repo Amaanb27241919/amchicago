@@ -3,12 +3,37 @@ import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/stores/cartStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export const Header = () => {
   const { getTotalItems, setOpen } = useCartStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const totalItems = getTotalItems();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const scrollToSection = (sectionId: string) => {
+    setMobileMenuOpen(false);
+    
+    // If not on home page, navigate home first
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } else {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const scrollToTop = () => {
+    setMobileMenuOpen(false);
+    if (location.pathname !== "/") {
+      navigate("/");
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass">
@@ -26,15 +51,30 @@ export const Header = () => {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <button
+              onClick={scrollToTop}
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
               Home
-            </Link>
-            <a href="#shop" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            </button>
+            <button
+              onClick={() => scrollToSection("shop")}
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
               Shop
-            </a>
-            <a href="#collections" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            </button>
+            <button
+              onClick={() => scrollToSection("collections")}
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
               Collections
-            </a>
+            </button>
+            <button
+              onClick={() => scrollToSection("about")}
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              About
+            </button>
           </nav>
 
           {/* Logo */}
@@ -89,27 +129,30 @@ export const Header = () => {
             className="md:hidden glass border-t border-border"
           >
             <nav className="container mx-auto px-4 py-4 flex flex-col gap-4">
-              <Link
-                to="/"
-                className="text-sm font-medium text-foreground py-2"
-                onClick={() => setMobileMenuOpen(false)}
+              <button
+                onClick={scrollToTop}
+                className="text-sm font-medium text-foreground py-2 text-left"
               >
                 Home
-              </Link>
-              <a
-                href="#shop"
-                className="text-sm font-medium text-foreground py-2"
-                onClick={() => setMobileMenuOpen(false)}
+              </button>
+              <button
+                onClick={() => scrollToSection("shop")}
+                className="text-sm font-medium text-foreground py-2 text-left"
               >
                 Shop
-              </a>
-              <a
-                href="#collections"
-                className="text-sm font-medium text-foreground py-2"
-                onClick={() => setMobileMenuOpen(false)}
+              </button>
+              <button
+                onClick={() => scrollToSection("collections")}
+                className="text-sm font-medium text-foreground py-2 text-left"
               >
                 Collections
-              </a>
+              </button>
+              <button
+                onClick={() => scrollToSection("about")}
+                className="text-sm font-medium text-foreground py-2 text-left"
+              >
+                About
+              </button>
             </nav>
           </motion.div>
         )}
