@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import amEssentialsImage from "@/assets/am-essentials-collection.png";
 
 const collections = [
   {
@@ -19,7 +20,7 @@ const collections = [
     name: "A | M Essentials",
     description: "Everyday luxury streetwear",
     query: "A | M",
-    image: "https://images.unsplash.com/photo-1507680434567-5739c80be1ac?w=800&auto=format&fit=crop&q=80",
+    image: amEssentialsImage,
   },
 ];
 
