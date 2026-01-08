@@ -14,21 +14,25 @@ export const Footer = () => {
           {/* Brand */}
           <div>
             <div className="mb-4">
-              <span className="text-3xl font-display font-semibold gradient-brand-text">
-                A | M
-              </span>
-              <p className="text-xs tracking-[0.3em] text-muted-foreground uppercase mt-1">
-                Chicago
-              </p>
+              <span className="text-3xl font-display font-semibold gradient-brand-text">A | M</span>
+              <p className="text-xs tracking-[0.3em] text-muted-foreground uppercase mt-1">Chicago</p>
             </div>
             <p className="text-muted-foreground text-sm mb-6">
               Premium streetwear rooted in Chicago. Designed for those who dare to aspire and manifest their vision.
             </p>
             <div className="flex gap-3">
-              <Button variant="outline" size="icon" className="rounded-full border-border hover:border-primary hover:text-primary">
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full border-border hover:border-primary hover:text-primary"
+              >
                 <Instagram className="h-4 w-4" />
               </Button>
-              <Button variant="outline" size="icon" className="rounded-full border-border hover:border-primary hover:text-primary">
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full border-border hover:border-primary hover:text-primary"
+              >
                 <Twitter className="h-4 w-4" />
               </Button>
             </div>
@@ -44,7 +48,10 @@ export const Footer = () => {
                 </button>
               </li>
               <li>
-                <button onClick={() => scrollToSection("collections")} className="hover:text-foreground transition-colors">
+                <button
+                  onClick={() => scrollToSection("collections")}
+                  className="hover:text-foreground transition-colors"
+                >
                   Collections
                 </button>
               </li>
@@ -76,8 +83,8 @@ export const Footer = () => {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-primary" />
-                <a href="mailto:info@amchicago.com" className="hover:text-foreground transition-colors">
-                  info@amchicago.com
+                <a href="mailto:am.threads.chicago@gmail.com" className="hover:text-foreground transition-colors">
+                  am.threads.chicago@gmail.com
                 </a>
               </li>
               <li className="flex items-center gap-2">
@@ -94,30 +101,26 @@ export const Footer = () => {
               Sign up to get updates on our launch and exclusive drops.
             </p>
             <div className="flex gap-2">
-              <Input
-                type="email"
-                placeholder="Email address"
-                className="bg-secondary border-border text-sm"
-              />
-              <Button className="gradient-brand text-primary-foreground shrink-0">
-                →
-              </Button>
+              <Input type="email" placeholder="Email address" className="bg-secondary border-border text-sm" />
+              <Button className="gradient-brand text-primary-foreground shrink-0">→</Button>
             </div>
-            <p className="text-xs text-muted-foreground mt-3">
-              Coming Soon...
-            </p>
+            <p className="text-xs text-muted-foreground mt-3">Coming Soon...</p>
           </div>
         </div>
 
         {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-muted-foreground">
-            © 2024 Aspire | Manifest. All rights reserved.
-          </p>
+          <p className="text-sm text-muted-foreground">© 2024 Aspire | Manifest. All rights reserved.</p>
           <div className="flex gap-6 text-sm text-muted-foreground">
-            <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-foreground transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-foreground transition-colors">Shipping & Returns</a>
+            <a href="#" className="hover:text-foreground transition-colors">
+              Privacy Policy
+            </a>
+            <a href="#" className="hover:text-foreground transition-colors">
+              Terms of Service
+            </a>
+            <a href="#" className="hover:text-foreground transition-colors">
+              Shipping & Returns
+            </a>
           </div>
         </div>
       </div>
