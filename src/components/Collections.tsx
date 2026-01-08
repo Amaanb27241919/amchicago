@@ -11,18 +11,21 @@ const collections = [
     description: "Premium essentials for the visionaries",
     query: "Founders",
     image: foundersSeriesImage,
+    imageClass: "object-cover",
   },
   {
     name: "Hope V1",
     description: "Bold statements, timeless style",
     query: "Hope",
     image: hopeV1Image,
+    imageClass: "object-contain scale-75",
   },
   {
     name: "A | M Essentials",
     description: "Everyday luxury streetwear",
     query: "A | M",
     image: amEssentialsImage,
+    imageClass: "object-cover",
   },
 ];
 
@@ -68,7 +71,7 @@ export const Collections = () => {
                 <img
                   src={collection.image}
                   alt={collection.name}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  className={`absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-110 ${collection.imageClass}`}
                 />
 
                 {/* Overlay */}
