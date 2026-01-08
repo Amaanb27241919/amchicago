@@ -18,6 +18,7 @@ const collections = [
     name: "Founders Series",
     description: "Premium essentials for the visionaries",
     query: "Founders",
+    filterFn: (title: string) => title.includes("Founders"),
     image: foundersSeriesImage,
     imageClass: "object-cover",
   },
@@ -25,6 +26,7 @@ const collections = [
     name: "Hope V1",
     description: "Bold statements, timeless style",
     query: "Hope",
+    filterFn: (title: string) => title.includes("Hope"),
     image: hopeV1Image,
     imageClass: "object-contain scale-75",
   },
@@ -32,6 +34,7 @@ const collections = [
     name: "A | M Essentials",
     description: "Everyday luxury streetwear",
     query: "A | M",
+    filterFn: (title: string) => title.startsWith("A | M") && !title.includes("Founders"),
     image: amEssentialsImage,
     imageClass: "object-cover",
   },
@@ -49,9 +52,20 @@ const Shop = () => {
     const loadProducts = async () => {
       setLoading(true);
       try {
-        const query = selectedCollection ? `title:*${selectedCollection}*` : undefined;
-        const data = await fetchProducts(50, query);
-        setProducts(data);
+        // Fetch all products and filter client-side for reliable matching
+        const data = await fetchProducts(50);
+        
+        if (selectedCollection) {
+          const collection = collections.find(c => c.query === selectedCollection);
+          if (collection) {
+            const filtered = data.filter(product => collection.filterFn(product.node.title));
+            setProducts(filtered);
+          } else {
+            setProducts(data);
+          }
+        } else {
+          setProducts(data);
+        }
       } catch (err) {
         setError("Failed to load products");
         console.error(err);
