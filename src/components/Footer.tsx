@@ -1,4 +1,4 @@
-import { Instagram, Twitter, MapPin, Mail, Phone } from "lucide-react";
+import { Instagram, MapPin, Mail, Phone, Linkedin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -21,20 +21,32 @@ export const Footer = () => {
               Premium streetwear rooted in Chicago. Designed for those who dare to aspire and manifest their vision.
             </p>
             <div className="flex gap-3">
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full border-border hover:border-primary hover:text-primary"
+              <a
+                href="https://www.instagram.com/amthreads_chicago"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <Instagram className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full border-border hover:border-primary hover:text-primary"
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="rounded-full border-border hover:border-primary hover:text-primary"
+                >
+                  <Instagram className="h-4 w-4" />
+                </Button>
+              </a>
+              <a
+                href="https://www.linkedin.com/company/a-m-chicago/"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <Twitter className="h-4 w-4" />
-              </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="rounded-full border-border hover:border-primary hover:text-primary"
+                >
+                  <Linkedin className="h-4 w-4" />
+                </Button>
+              </a>
             </div>
           </div>
 

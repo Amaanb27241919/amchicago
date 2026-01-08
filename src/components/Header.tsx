@@ -1,4 +1,5 @@
-import { ShoppingBag, Menu, X } from "lucide-react";
+import { ShoppingBag, Menu, X, Instagram } from "lucide-react";
+import { Linkedin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/stores/cartStore";
 import { motion, AnimatePresence } from "framer-motion";
@@ -88,7 +89,27 @@ export const Header = () => {
           </Link>
 
           {/* Right side */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <a
+              href="https://www.instagram.com/amthreads_chicago"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:flex"
+            >
+              <Button variant="ghost" size="icon" className="h-9 w-9">
+                <Instagram className="h-4 w-4" />
+              </Button>
+            </a>
+            <a
+              href="https://www.linkedin.com/company/a-m-chicago/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:flex"
+            >
+              <Button variant="ghost" size="icon" className="h-9 w-9">
+                <Linkedin className="h-4 w-4" />
+              </Button>
+            </a>
             <Button
               variant="ghost"
               size="icon"

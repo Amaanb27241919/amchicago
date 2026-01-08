@@ -7,7 +7,9 @@ import { CartDrawer } from "@/components/CartDrawer";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductFilters } from "@/components/ProductFilters";
 import { ShopifyProduct, fetchProducts } from "@/lib/shopify";
-import { Loader2 } from "lucide-react";
+import { Loader2, Search, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const collections = [
   {
@@ -40,6 +42,7 @@ const Shop = () => {
   const selectedCollections = searchParams.get("collection")?.split(",").filter(Boolean) || [];
   const selectedCategories = searchParams.get("category")?.split(",").filter(Boolean) || [];
   const sortBy = (searchParams.get("sort") as SortOption) || "newest";
+  const searchQuery = searchParams.get("q") || "";
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -61,6 +64,15 @@ const Shop = () => {
   const filteredProducts = useMemo(() => {
     let result = [...allProducts];
 
+    // Filter by search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(product => 
+        product.node.title.toLowerCase().includes(query) ||
+        product.node.description.toLowerCase().includes(query)
+      );
+    }
+
     // Filter by collections (OR logic - match any selected collection)
     if (selectedCollections.length > 0) {
       result = result.filter(product => {
@@ -76,9 +88,7 @@ const Shop = () => {
       result = result.filter(product => {
         const title = product.node.title.toLowerCase();
         return selectedCategories.some(category => {
-          // More precise matching for categories
           const categoryLower = category.toLowerCase();
-          // Check for word boundaries to avoid partial matches
           return title.includes(categoryLower);
         });
       });
@@ -101,7 +111,17 @@ const Shop = () => {
     });
 
     return result;
-  }, [allProducts, selectedCollections, selectedCategories, sortBy]);
+  }, [allProducts, searchQuery, selectedCollections, selectedCategories, sortBy]);
+
+  const handleSearchChange = (query: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (query) {
+      params.set("q", query);
+    } else {
+      params.delete("q");
+    }
+    setSearchParams(params);
+  };
 
   const handleCollectionChange = (newCollections: string[]) => {
     const params = new URLSearchParams(searchParams);
@@ -156,6 +176,30 @@ const Shop = () => {
                   : "All Products"}
               </h1>
             </motion.div>
+
+            {/* Search Bar */}
+            <div className="max-w-md mx-auto mb-8">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  className="pl-10 pr-10 bg-secondary border-border"
+                />
+                {searchQuery && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                    onClick={() => handleSearchChange("")}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            </div>
 
             {/* Filters */}
             <ProductFilters
