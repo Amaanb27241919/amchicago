@@ -57,7 +57,7 @@ export const Footer = () => {
         <div className="border-t border-white/10 pt-8">
           {/* Bottom row */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-400">
-            <p>© 2026 Aspire | Manifest</p>
+            <p>© 2026 A | M Chicago</p>
             
             <div className="flex items-center gap-6">
               <a href="#" className="hover:text-white transition-colors">

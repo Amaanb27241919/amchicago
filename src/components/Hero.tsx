@@ -59,12 +59,15 @@ export const Hero = () => {
               transition={{ delay: 0.4 }}
               className="mt-12"
             >
-              <p className="text-red-600 text-lg sm:text-xl font-medium uppercase tracking-wider mb-2">
+              <p className="text-[#1a1a1a] text-sm sm:text-base font-medium uppercase tracking-wider mb-2">
                 Introducing
               </p>
-              <h2 className="text-[#1a1a1a] text-3xl sm:text-4xl md:text-5xl font-display font-semibold">
+              <h2 className="text-[#1a1a1a] text-3xl sm:text-4xl md:text-5xl font-display font-semibold mb-3">
                 Our Newest Arrivals
               </h2>
+              <p className="text-gray-600 text-lg sm:text-xl">
+                Check out Hope V1
+              </p>
             </motion.div>
           </motion.div>
 
