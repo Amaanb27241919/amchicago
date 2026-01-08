@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+import { logError } from "@/lib/logger";
 
 // Shopify Configuration
 const SHOPIFY_API_VERSION = '2025-07';
@@ -264,7 +265,7 @@ export async function createStorefrontCheckout(items: Array<{ variantId: string;
     url.searchParams.set('channel', 'online_store');
     return url.toString();
   } catch (error) {
-    console.error('Error creating storefront checkout:', error);
+    logError('Error creating storefront checkout:', error);
     throw error;
   }
 }

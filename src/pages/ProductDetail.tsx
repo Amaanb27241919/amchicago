@@ -8,6 +8,7 @@ import { useCartStore } from "@/stores/cartStore";
 import { Header } from "@/components/Header";
 import { CartDrawer } from "@/components/CartDrawer";
 import { toast } from "sonner";
+import { logError } from "@/lib/logger";
 
 const ProductDetail = () => {
   const { handle } = useParams<{ handle: string }>();
@@ -25,7 +26,7 @@ const ProductDetail = () => {
         const data = await fetchProductByHandle(handle);
         setProduct(data);
       } catch (err) {
-        console.error(err);
+        logError("Failed to load product:", err);
       } finally {
         setLoading(false);
       }

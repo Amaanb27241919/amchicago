@@ -5,6 +5,14 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { logError } from "@/lib/logger";
+
+// Email validation regex - checks for proper format with TLD
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Rate limiting constants
+const RATE_LIMIT_KEY = 'newsletter_last_submit';
+const RATE_LIMIT_MINUTES = 5;
 
 export const Footer = () => {
   const [email, setEmail] = useState("");
@@ -13,8 +21,17 @@ export const Footer = () => {
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !email.includes("@")) {
+    // Proper email validation with regex
+    const trimmedEmail = email.trim().toLowerCase();
+    if (!trimmedEmail || !EMAIL_REGEX.test(trimmedEmail)) {
       toast.error("Please enter a valid email address");
+      return;
+    }
+
+    // Client-side rate limiting to prevent spam
+    const lastSubmit = localStorage.getItem(RATE_LIMIT_KEY);
+    if (lastSubmit && Date.now() - parseInt(lastSubmit) < RATE_LIMIT_MINUTES * 60000) {
+      toast.error("Please wait a few minutes before subscribing again");
       return;
     }
 
@@ -22,7 +39,7 @@ export const Footer = () => {
     try {
       const { error } = await supabase
         .from("newsletter_subscribers")
-        .insert({ email: email.toLowerCase().trim() });
+        .insert({ email: trimmedEmail });
 
       if (error) {
         if (error.code === "23505") {
@@ -31,11 +48,13 @@ export const Footer = () => {
           throw error;
         }
       } else {
+        // Store timestamp for rate limiting
+        localStorage.setItem(RATE_LIMIT_KEY, Date.now().toString());
         toast.success("Thanks for subscribing! 🎉");
         setEmail("");
       }
     } catch (error) {
-      console.error("Newsletter signup error:", error);
+      logError("Newsletter signup error:", error);
       toast.error("Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);

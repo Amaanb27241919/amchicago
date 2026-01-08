@@ -10,6 +10,7 @@ import { ShoppingBag, Minus, Plus, Trash2, ExternalLink, Loader2 } from "lucide-
 import { useCartStore } from "@/stores/cartStore";
 import { formatPrice } from "@/lib/shopify";
 import { motion, AnimatePresence } from "framer-motion";
+import { logError } from "@/lib/logger";
 
 export const CartDrawer = () => {
   const { 
@@ -36,7 +37,7 @@ export const CartDrawer = () => {
         setOpen(false);
       }
     } catch (error) {
-      console.error('Checkout failed:', error);
+      logError('Checkout failed:', error);
     }
   };
 
