@@ -10,6 +10,7 @@ import { ShopifyProduct, fetchProducts } from "@/lib/shopify";
 import { Loader2, Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { logError } from "@/lib/logger";
 
 const collections = [
   {
@@ -52,7 +53,7 @@ const Shop = () => {
         setAllProducts(data);
       } catch (err) {
         setError("Failed to load products");
-        console.error(err);
+        logError("Failed to load products:", err);
       } finally {
         setLoading(false);
       }

@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { ShopifyProduct, fetchProducts } from "@/lib/shopify";
 import { ProductCard } from "./ProductCard";
 import { Loader2 } from "lucide-react";
+import { logError } from "@/lib/logger";
 
 export const ProductGrid = () => {
   const [products, setProducts] = useState<ShopifyProduct[]>([]);
@@ -16,7 +17,7 @@ export const ProductGrid = () => {
         setProducts(data);
       } catch (err) {
         setError("Failed to load products");
-        console.error(err);
+        logError("Failed to load products:", err);
       } finally {
         setLoading(false);
       }

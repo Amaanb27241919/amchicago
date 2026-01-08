@@ -5,6 +5,7 @@ import { ProductCard } from "./ProductCard";
 import { Loader2, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
+import { logError } from "@/lib/logger";
 
 export const LatestDrops = () => {
   const [products, setProducts] = useState<ShopifyProduct[]>([]);
@@ -19,7 +20,7 @@ export const LatestDrops = () => {
         setProducts(data);
       } catch (err) {
         setError("Failed to load products");
-        console.error(err);
+        logError("Failed to load products:", err);
       } finally {
         setLoading(false);
       }
