@@ -31,7 +31,7 @@ const collections = [
   {
     name: "A | M Essentials",
     description: "Everyday luxury streetwear",
-    query: "A | M",
+    query: "Essentials",
     image: amEssentialsImage,
     imageClass: "object-cover",
   },
