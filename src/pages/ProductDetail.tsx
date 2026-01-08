@@ -7,7 +7,6 @@ import { fetchProductByHandle, formatPrice, ShopifyProduct } from "@/lib/shopify
 import { useCartStore } from "@/stores/cartStore";
 import { Header } from "@/components/Header";
 import { CartDrawer } from "@/components/CartDrawer";
-import { Footer } from "@/components/Footer";
 import { toast } from "sonner";
 
 const ProductDetail = () => {
@@ -36,18 +35,18 @@ const ProductDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f5f5f5] flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-red-600" />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-[#f5f5f5] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-display mb-4 text-[#1a1a1a]">Product not found</h1>
-          <Link to="/" className="text-red-600 hover:underline">
+          <h1 className="text-2xl font-display mb-4">Product not found</h1>
+          <Link to="/" className="text-primary hover:underline">
             Return home
           </Link>
         </div>
@@ -79,16 +78,16 @@ const ProductDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5]">
+    <div className="min-h-screen bg-background">
       <Header />
       <CartDrawer />
 
-      <main className="pt-8 pb-20">
+      <main className="pt-24 pb-20">
         <div className="container mx-auto px-4 sm:px-6">
           {/* Back link */}
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-gray-500 hover:text-[#1a1a1a] mb-8 transition-colors"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Shop
@@ -102,7 +101,7 @@ const ProductDetail = () => {
               className="space-y-4"
             >
               {/* Main image */}
-              <div className="aspect-[3/4] rounded-lg overflow-hidden bg-white">
+              <div className="aspect-[3/4] rounded-lg overflow-hidden bg-card">
                 {images[selectedImage]?.node && (
                   <img
                     src={images[selectedImage].node.url}
@@ -119,8 +118,8 @@ const ProductDetail = () => {
                     <button
                       key={index}
                       onClick={() => setSelectedImage(index)}
-                      className={`w-20 h-20 rounded-md overflow-hidden flex-shrink-0 border-2 transition-colors bg-white ${
-                        selectedImage === index ? "border-red-600" : "border-transparent"
+                      className={`w-20 h-20 rounded-md overflow-hidden flex-shrink-0 border-2 transition-colors ${
+                        selectedImage === index ? "border-primary" : "border-transparent"
                       }`}
                     >
                       <img
@@ -140,22 +139,22 @@ const ProductDetail = () => {
               animate={{ opacity: 1, x: 0 }}
               className="lg:sticky lg:top-24 lg:self-start"
             >
-              <h1 className="font-display text-3xl sm:text-4xl font-semibold mb-4 text-[#1a1a1a]">
+              <h1 className="font-display text-3xl sm:text-4xl font-semibold mb-4">
                 {product.title}
               </h1>
 
-              <p className="text-2xl font-semibold text-[#1a1a1a] mb-6">
+              <p className="text-2xl font-semibold gradient-brand-text mb-6">
                 {selectedVariant && formatPrice(selectedVariant.price.amount, selectedVariant.price.currencyCode)}
               </p>
 
-              <p className="text-gray-500 mb-8 leading-relaxed">
+              <p className="text-muted-foreground mb-8 leading-relaxed">
                 {product.description}
               </p>
 
               {/* Options */}
               {product.options.map((option) => (
                 <div key={option.name} className="mb-6">
-                  <label className="block text-sm font-medium mb-3 text-[#1a1a1a]">{option.name}</label>
+                  <label className="block text-sm font-medium mb-3">{option.name}</label>
                   <div className="flex flex-wrap gap-2">
                     {option.values.map((value) => {
                       const variantIndex = product.variants.edges.findIndex(
@@ -173,8 +172,8 @@ const ProductDetail = () => {
                           onClick={() => variantIndex >= 0 && setSelectedVariantIndex(variantIndex)}
                           className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
                             isSelected
-                              ? "border-red-600 bg-red-50 text-red-600"
-                              : "border-gray-200 hover:border-gray-400 text-[#1a1a1a]"
+                              ? "border-primary bg-primary/10 text-primary"
+                              : "border-border hover:border-muted-foreground"
                           }`}
                         >
                           {value}
@@ -187,21 +186,21 @@ const ProductDetail = () => {
 
               {/* Quantity */}
               <div className="mb-8">
-                <label className="block text-sm font-medium mb-3 text-[#1a1a1a]">Quantity</label>
-                <div className="inline-flex items-center gap-1 bg-white rounded-lg p-1 border border-gray-200">
+                <label className="block text-sm font-medium mb-3">Quantity</label>
+                <div className="inline-flex items-center gap-1 bg-secondary rounded-lg p-1">
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-10 w-10 text-[#1a1a1a]"
+                    className="h-10 w-10"
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
-                  <span className="w-12 text-center font-medium text-[#1a1a1a]">{quantity}</span>
+                  <span className="w-12 text-center font-medium">{quantity}</span>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-10 w-10 text-[#1a1a1a]"
+                    className="h-10 w-10"
                     onClick={() => setQuantity(quantity + 1)}
                   >
                     <Plus className="h-4 w-4" />
@@ -212,7 +211,7 @@ const ProductDetail = () => {
               {/* Add to cart */}
               <Button
                 size="lg"
-                className="w-full bg-[#1a1a1a] hover:bg-[#2a2a2a] text-white font-semibold"
+                className="w-full gradient-brand text-primary-foreground font-semibold glow-brand"
                 onClick={handleAddToCart}
                 disabled={!selectedVariant?.availableForSale}
               >
@@ -223,10 +222,6 @@ const ProductDetail = () => {
           </div>
         </div>
       </main>
-
-      <footer id="footer">
-        <Footer />
-      </footer>
     </div>
   );
 };

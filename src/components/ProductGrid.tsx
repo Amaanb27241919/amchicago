@@ -27,53 +27,50 @@ export const ProductGrid = () => {
 
   if (loading) {
     return (
-      <section className="py-16 sm:py-24 bg-[#f5f5f5]">
-        <div className="container mx-auto px-4 sm:px-6 flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-red-600" />
-        </div>
-      </section>
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
     );
   }
 
   if (error) {
     return (
-      <section className="py-16 sm:py-24 bg-[#f5f5f5]">
-        <div className="container mx-auto px-4 sm:px-6 text-center py-20">
-          <p className="text-gray-500">{error}</p>
-        </div>
-      </section>
+      <div className="text-center py-20">
+        <p className="text-muted-foreground">{error}</p>
+      </div>
     );
   }
 
   if (products.length === 0) {
     return (
-      <section className="py-16 sm:py-24 bg-[#f5f5f5]">
-        <div className="container mx-auto px-4 sm:px-6 text-center py-20">
-          <p className="text-gray-500">No products found</p>
-        </div>
-      </section>
+      <div className="text-center py-20">
+        <p className="text-muted-foreground">No products found</p>
+      </div>
     );
   }
 
   return (
-    <section id="all-products" className="py-16 sm:py-24 bg-[#f5f5f5]">
+    <section id="shop" className="py-20 sm:py-32">
       <div className="container mx-auto px-4 sm:px-6">
         {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-12 sm:mb-16"
         >
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-semibold text-[#1a1a1a]">
-            All Products
+          <span className="text-sm tracking-[0.3em] uppercase text-primary mb-2 block">
+            Collection
+          </span>
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-semibold">
+            Latest Drops
           </h2>
         </motion.div>
 
         {/* Product grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {products.map((product, index) => (
-            <ProductCard key={product.node.id} product={product} index={index} variant="light" />
+            <ProductCard key={product.node.id} product={product} index={index} />
           ))}
         </div>
       </div>
