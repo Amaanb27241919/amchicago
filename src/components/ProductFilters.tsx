@@ -1,5 +1,14 @@
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+
+type SortOption = "newest" | "price-asc" | "price-desc";
 
 interface ProductFiltersProps {
   collections: string[];
@@ -8,6 +17,8 @@ interface ProductFiltersProps {
   categories: string[];
   selectedCategory: string | null;
   onCategoryChange: (category: string | null) => void;
+  sortBy: SortOption;
+  onSortChange: (sort: SortOption) => void;
 }
 
 const collectionNames: Record<string, string> = {
@@ -16,6 +27,12 @@ const collectionNames: Record<string, string> = {
   "A | M": "A | M Essentials",
 };
 
+const sortOptions = [
+  { value: "newest", label: "Newest" },
+  { value: "price-asc", label: "Price: Low to High" },
+  { value: "price-desc", label: "Price: High to Low" },
+];
+
 export const ProductFilters = ({
   collections,
   selectedCollection,
@@ -23,6 +40,8 @@ export const ProductFilters = ({
   categories,
   selectedCategory,
   onCategoryChange,
+  sortBy,
+  onSortChange,
 }: ProductFiltersProps) => {
   return (
     <div className="space-y-4 mb-8">
@@ -84,6 +103,23 @@ export const ProductFilters = ({
             {category}
           </Button>
         ))}
+      </div>
+
+      {/* Sort Dropdown */}
+      <div className="flex items-center justify-center gap-2">
+        <span className="text-sm text-muted-foreground">Sort by:</span>
+        <Select value={sortBy} onValueChange={(value) => onSortChange(value as SortOption)}>
+          <SelectTrigger className="w-[180px] bg-background">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="bg-background z-50">
+            {sortOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );
