@@ -37,8 +37,8 @@ const Shop = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  const selectedCollection = searchParams.get("collection");
-  const selectedCategory = searchParams.get("category");
+  const selectedCollections = searchParams.get("collection")?.split(",").filter(Boolean) || [];
+  const selectedCategories = searchParams.get("category")?.split(",").filter(Boolean) || [];
   const sortBy = (searchParams.get("sort") as SortOption) || "newest";
 
   useEffect(() => {
@@ -61,19 +61,27 @@ const Shop = () => {
   const filteredProducts = useMemo(() => {
     let result = [...allProducts];
 
-    // Filter by collection
-    if (selectedCollection) {
-      const collection = collections.find(c => c.query === selectedCollection);
-      if (collection) {
-        result = result.filter(product => collection.filterFn(product.node.title));
-      }
+    // Filter by collections (OR logic - match any selected collection)
+    if (selectedCollections.length > 0) {
+      result = result.filter(product => {
+        return selectedCollections.some(collQuery => {
+          const collection = collections.find(c => c.query === collQuery);
+          return collection ? collection.filterFn(product.node.title) : false;
+        });
+      });
     }
 
-    // Filter by category
-    if (selectedCategory) {
-      result = result.filter(product => 
-        product.node.title.toLowerCase().includes(selectedCategory.toLowerCase())
-      );
+    // Filter by categories (OR logic - match any selected category)
+    if (selectedCategories.length > 0) {
+      result = result.filter(product => {
+        const title = product.node.title.toLowerCase();
+        return selectedCategories.some(category => {
+          // More precise matching for categories
+          const categoryLower = category.toLowerCase();
+          // Check for word boundaries to avoid partial matches
+          return title.includes(categoryLower);
+        });
+      });
     }
 
     // Sort products
@@ -88,27 +96,27 @@ const Shop = () => {
           return priceB - priceA;
         case "newest":
         default:
-          return 0; // Keep original order (newest first from Shopify)
+          return 0;
       }
     });
 
     return result;
-  }, [allProducts, selectedCollection, selectedCategory, sortBy]);
+  }, [allProducts, selectedCollections, selectedCategories, sortBy]);
 
-  const handleCollectionChange = (collection: string | null) => {
+  const handleCollectionChange = (newCollections: string[]) => {
     const params = new URLSearchParams(searchParams);
-    if (collection) {
-      params.set("collection", collection);
+    if (newCollections.length > 0) {
+      params.set("collection", newCollections.join(","));
     } else {
       params.delete("collection");
     }
     setSearchParams(params);
   };
 
-  const handleCategoryChange = (category: string | null) => {
+  const handleCategoryChange = (newCategories: string[]) => {
     const params = new URLSearchParams(searchParams);
-    if (category) {
-      params.set("category", category);
+    if (newCategories.length > 0) {
+      params.set("category", newCategories.join(","));
     } else {
       params.delete("category");
     }
@@ -139,8 +147,8 @@ const Shop = () => {
                 Shop
               </span>
               <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-semibold">
-                {selectedCollection 
-                  ? collections.find(c => c.query === selectedCollection)?.name || selectedCollection
+                {selectedCollections.length > 0 
+                  ? selectedCollections.map(c => collections.find(col => col.query === c)?.name || c).join(" & ")
                   : "All Products"}
               </h1>
             </motion.div>
@@ -148,10 +156,10 @@ const Shop = () => {
             {/* Filters */}
             <ProductFilters
               collections={collections.map((c) => c.query)}
-              selectedCollection={selectedCollection}
+              selectedCollections={selectedCollections}
               onCollectionChange={handleCollectionChange}
               categories={categories}
-              selectedCategory={selectedCategory}
+              selectedCategories={selectedCategories}
               onCategoryChange={handleCategoryChange}
               sortBy={sortBy}
               onSortChange={handleSortChange}
