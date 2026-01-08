@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
@@ -11,9 +12,13 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Replace with your Google Analytics Measurement ID (G-XXXXXXXXXX)
+const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || "";
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
+      {GA_MEASUREMENT_ID && <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />}
       <Toaster />
       <Sonner />
       <BrowserRouter>
