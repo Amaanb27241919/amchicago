@@ -129,6 +129,10 @@ const Shop = () => {
     setSearchParams(params);
   };
 
+  const handleClearAll = () => {
+    setSearchParams(new URLSearchParams());
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -163,6 +167,7 @@ const Shop = () => {
               onCategoryChange={handleCategoryChange}
               sortBy={sortBy}
               onSortChange={handleSortChange}
+              onClearAll={handleClearAll}
             />
 
             {/* Products Grid */}

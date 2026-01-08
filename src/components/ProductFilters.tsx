@@ -19,6 +19,7 @@ interface ProductFiltersProps {
   onCategoryChange: (categories: string[]) => void;
   sortBy: SortOption;
   onSortChange: (sort: SortOption) => void;
+  onClearAll: () => void;
 }
 
 const collectionNames: Record<string, string> = {
@@ -42,7 +43,9 @@ export const ProductFilters = ({
   onCategoryChange,
   sortBy,
   onSortChange,
+  onClearAll,
 }: ProductFiltersProps) => {
+  const hasActiveFilters = selectedCollections.length > 0 || selectedCategories.length > 0 || sortBy !== "newest";
   const toggleCollection = (collection: string) => {
     if (selectedCollections.includes(collection)) {
       onCollectionChange(selectedCollections.filter(c => c !== collection));
@@ -121,21 +124,34 @@ export const ProductFilters = ({
         ))}
       </div>
 
-      {/* Sort Dropdown */}
-      <div className="flex items-center justify-center gap-2">
-        <span className="text-sm text-muted-foreground">Sort by:</span>
-        <Select value={sortBy} onValueChange={(value) => onSortChange(value as SortOption)}>
-          <SelectTrigger className="w-[180px] bg-background">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="bg-background z-50">
-            {sortOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      {/* Sort Dropdown and Clear Button */}
+      <div className="flex items-center justify-center gap-4">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">Sort by:</span>
+          <Select value={sortBy} onValueChange={(value) => onSortChange(value as SortOption)}>
+            <SelectTrigger className="w-[180px] bg-background">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-background z-50">
+              {sortOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        {hasActiveFilters && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClearAll}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            Clear all
+          </Button>
+        )}
       </div>
     </div>
   );
