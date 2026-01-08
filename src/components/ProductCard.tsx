@@ -9,9 +9,10 @@ import { toast } from "sonner";
 interface ProductCardProps {
   product: ShopifyProduct;
   index: number;
+  variant?: "dark" | "light";
 }
 
-export const ProductCard = ({ product, index }: ProductCardProps) => {
+export const ProductCard = ({ product, index, variant = "dark" }: ProductCardProps) => {
   const { addItem, setOpen } = useCartStore();
   const { node } = product;
 
@@ -51,7 +52,7 @@ export const ProductCard = ({ product, index }: ProductCardProps) => {
       transition={{ duration: 0.5, delay: index * 0.1 }}
     >
       <Link to={`/product/${node.handle}`} className="group block">
-        <div className="relative overflow-hidden rounded-lg bg-card aspect-[3/4] mb-4">
+        <div className={`relative overflow-hidden rounded-lg aspect-[3/4] mb-4 ${variant === "light" ? "bg-white" : "bg-card"}`}>
           {/* Primary image */}
           {firstImage && (
             <img
@@ -98,10 +99,10 @@ export const ProductCard = ({ product, index }: ProductCardProps) => {
 
         {/* Product info */}
         <div className="space-y-1">
-          <h3 className="font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">
+          <h3 className={`font-medium group-hover:text-red-600 transition-colors line-clamp-1 ${variant === "light" ? "text-[#1a1a1a]" : "text-foreground"}`}>
             {node.title}
           </h3>
-          <p className="text-sm font-semibold gradient-brand-text">
+          <p className={`text-sm font-semibold ${variant === "light" ? "text-[#1a1a1a]" : "gradient-brand-text"}`}>
             {formatPrice(price.amount, price.currencyCode)}
           </p>
         </div>

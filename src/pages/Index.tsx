@@ -1,23 +1,25 @@
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
+import { NewArrivals } from "@/components/NewArrivals";
 import { ProductGrid } from "@/components/ProductGrid";
 import { Collections } from "@/components/Collections";
-import { About } from "@/components/About";
 import { Footer } from "@/components/Footer";
 import { CartDrawer } from "@/components/CartDrawer";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#f5f5f5]">
       <Header />
       <CartDrawer />
       <main>
         <Hero />
-        <ProductGrid />
+        <NewArrivals />
         <Collections />
-        <About />
+        <ProductGrid />
       </main>
-      <Footer />
+      <footer id="footer">
+        <Footer />
+      </footer>
     </div>
   );
 };
