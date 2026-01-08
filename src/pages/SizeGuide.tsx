@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const hoodiesSizes = [
   { size: "S", chest: "26.0", length: "27.6", shoulder: "25.6", sleeve: "21.1" },
@@ -37,6 +38,12 @@ const joggerSizes = [
 ];
 
 const SizeGuide = () => {
+  usePageMeta({
+    title: "Size Guide",
+    description: "Find your perfect fit with our comprehensive size guide for hoodies, t-shirts, and joggers. All measurements in inches.",
+    keywords: "size guide, clothing measurements, hoodie sizes, t-shirt sizes, jogger sizes, streetwear fit",
+    canonicalPath: "/size-guide",
+  });
   return (
     <div className="min-h-screen bg-background">
       <Header />

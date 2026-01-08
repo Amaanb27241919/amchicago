@@ -9,6 +9,7 @@ import { Header } from "@/components/Header";
 import { CartDrawer } from "@/components/CartDrawer";
 import { toast } from "sonner";
 import { logError } from "@/lib/logger";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const ProductDetail = () => {
   const { handle } = useParams<{ handle: string }>();
@@ -33,6 +34,15 @@ const ProductDetail = () => {
     };
     loadProduct();
   }, [handle]);
+
+  // Dynamic SEO for product pages
+  usePageMeta({
+    title: product?.title || "Product",
+    description: product?.description?.slice(0, 160) || "Shop premium streetwear from A | M Chicago.",
+    keywords: `${product?.title || ""}, Chicago streetwear, premium clothing`,
+    ogImage: product?.images?.edges?.[0]?.node?.url,
+    canonicalPath: `/product/${handle}`,
+  });
 
   if (loading) {
     return (

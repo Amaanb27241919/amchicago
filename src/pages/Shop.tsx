@@ -11,6 +11,7 @@ import { Loader2, Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { logError } from "@/lib/logger";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const collections = [
   {
@@ -44,6 +45,13 @@ const Shop = () => {
   const selectedCategories = searchParams.get("category")?.split(",").filter(Boolean) || [];
   const sortBy = (searchParams.get("sort") as SortOption) || "newest";
   const searchQuery = searchParams.get("q") || "";
+
+  usePageMeta({
+    title: "Shop All Products",
+    description: "Browse our complete collection of premium streetwear. Hoodies, t-shirts, joggers, and more from A | M Chicago.",
+    keywords: "shop streetwear, Chicago hoodies, premium t-shirts, urban joggers, streetwear collection",
+    canonicalPath: "/shop",
+  });
 
   useEffect(() => {
     const loadProducts = async () => {
