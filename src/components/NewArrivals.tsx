@@ -4,19 +4,18 @@ import { ShopifyProduct, fetchProducts } from "@/lib/shopify";
 import { ProductCard } from "./ProductCard";
 import { Loader2 } from "lucide-react";
 
-export const ProductGrid = () => {
+export const NewArrivals = () => {
   const [products, setProducts] = useState<ShopifyProduct[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        const data = await fetchProducts(20);
+        // Fetch Hope V1 products for the new arrivals section
+        const data = await fetchProducts(6, "Hope V1");
         setProducts(data);
       } catch (err) {
-        setError("Failed to load products");
-        console.error(err);
+        console.error("Failed to load products", err);
       } finally {
         setLoading(false);
       }
@@ -35,28 +34,12 @@ export const ProductGrid = () => {
     );
   }
 
-  if (error) {
-    return (
-      <section className="py-16 sm:py-24 bg-[#f5f5f5]">
-        <div className="container mx-auto px-4 sm:px-6 text-center py-20">
-          <p className="text-gray-500">{error}</p>
-        </div>
-      </section>
-    );
-  }
-
   if (products.length === 0) {
-    return (
-      <section className="py-16 sm:py-24 bg-[#f5f5f5]">
-        <div className="container mx-auto px-4 sm:px-6 text-center py-20">
-          <p className="text-gray-500">No products found</p>
-        </div>
-      </section>
-    );
+    return null;
   }
 
   return (
-    <section id="all-products" className="py-16 sm:py-24 bg-[#f5f5f5]">
+    <section id="shop" className="py-16 sm:py-24 bg-[#f5f5f5]">
       <div className="container mx-auto px-4 sm:px-6">
         {/* Section header */}
         <motion.div
@@ -65,8 +48,9 @@ export const ProductGrid = () => {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-semibold text-[#1a1a1a]">
-            All Products
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-semibold">
+            <span className="text-red-600">CHECK OUT</span>{" "}
+            <span className="text-[#1a1a1a]">HOPE V1</span>
           </h2>
         </motion.div>
 
