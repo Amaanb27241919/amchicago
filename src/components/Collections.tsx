@@ -59,12 +59,7 @@ export const Collections = () => {
               transition={{ delay: index * 0.1 }}
             >
               <Link
-                to={`/?collection=${encodeURIComponent(collection.query)}`}
-                onClick={() => {
-                  setTimeout(() => {
-                    document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
-                  }, 100);
-                }}
+                to={`/shop?collection=${encodeURIComponent(collection.query)}`}
                 className="group block relative overflow-hidden rounded-xl aspect-[4/5] hover-shine"
               >
                 {/* Background image */}
