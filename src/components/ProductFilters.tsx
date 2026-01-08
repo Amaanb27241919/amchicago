@@ -7,13 +7,19 @@ interface ProductFiltersProps {
   onCollectionChange: (collection: string | null) => void;
 }
 
+const collectionNames: Record<string, string> = {
+  "Founders": "Founders Series",
+  "Hope": "Hope V1",
+  "A | M": "A | M Essentials",
+};
+
 export const ProductFilters = ({
   collections,
   selectedCollection,
   onCollectionChange,
 }: ProductFiltersProps) => {
   return (
-    <div className="flex flex-wrap items-center gap-2 mb-8">
+    <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
       <Button
         variant={selectedCollection === null ? "default" : "outline"}
         size="sm"
@@ -36,7 +42,7 @@ export const ProductFilters = ({
             selectedCollection === collection && "bg-primary text-primary-foreground"
           )}
         >
-          {collection}
+          {collectionNames[collection] || collection}
         </Button>
       ))}
     </div>
