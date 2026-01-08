@@ -2,19 +2,21 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import amEssentialsImage from "@/assets/am-essentials-collection.png";
+import foundersSeriesImage from "@/assets/founders-series-collection.png";
+import hopeV1Image from "@/assets/hope-v1-collection.png";
 
 const collections = [
   {
     name: "Founders Series",
     description: "Premium essentials for the visionaries",
     query: "Founders",
-    image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&auto=format&fit=crop&q=80",
+    image: foundersSeriesImage,
   },
   {
     name: "Hope V1",
     description: "Bold statements, timeless style",
     query: "Hope",
-    image: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=800&auto=format&fit=crop&q=80",
+    image: hopeV1Image,
   },
   {
     name: "A | M Essentials",
