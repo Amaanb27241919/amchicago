@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
 import { Header } from "@/components/Header";
@@ -27,32 +27,23 @@ const collections = [
   },
 ];
 
+const categories = ["Hoodie", "T-Shirt", "Joggers", "Shorts", "Crewneck"];
+
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [products, setProducts] = useState<ShopifyProduct[]>([]);
+  const [allProducts, setAllProducts] = useState<ShopifyProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
   const selectedCollection = searchParams.get("collection");
+  const selectedCategory = searchParams.get("category");
 
   useEffect(() => {
     const loadProducts = async () => {
       setLoading(true);
       try {
-        // Fetch all products and filter client-side for reliable matching
         const data = await fetchProducts(50);
-        
-        if (selectedCollection) {
-          const collection = collections.find(c => c.query === selectedCollection);
-          if (collection) {
-            const filtered = data.filter(product => collection.filterFn(product.node.title));
-            setProducts(filtered);
-          } else {
-            setProducts(data);
-          }
-        } else {
-          setProducts(data);
-        }
+        setAllProducts(data);
       } catch (err) {
         setError("Failed to load products");
         console.error(err);
@@ -62,14 +53,47 @@ const Shop = () => {
     };
 
     loadProducts();
-  }, [selectedCollection]);
+  }, []);
+
+  const filteredProducts = useMemo(() => {
+    let result = allProducts;
+
+    // Filter by collection
+    if (selectedCollection) {
+      const collection = collections.find(c => c.query === selectedCollection);
+      if (collection) {
+        result = result.filter(product => collection.filterFn(product.node.title));
+      }
+    }
+
+    // Filter by category
+    if (selectedCategory) {
+      result = result.filter(product => 
+        product.node.title.toLowerCase().includes(selectedCategory.toLowerCase())
+      );
+    }
+
+    return result;
+  }, [allProducts, selectedCollection, selectedCategory]);
 
   const handleCollectionChange = (collection: string | null) => {
+    const params = new URLSearchParams(searchParams);
     if (collection) {
-      setSearchParams({ collection });
+      params.set("collection", collection);
     } else {
-      setSearchParams({});
+      params.delete("collection");
     }
+    setSearchParams(params);
+  };
+
+  const handleCategoryChange = (category: string | null) => {
+    const params = new URLSearchParams(searchParams);
+    if (category) {
+      params.set("category", category);
+    } else {
+      params.delete("category");
+    }
+    setSearchParams(params);
   };
 
   return (
@@ -101,6 +125,9 @@ const Shop = () => {
               collections={collections.map((c) => c.query)}
               selectedCollection={selectedCollection}
               onCollectionChange={handleCollectionChange}
+              categories={categories}
+              selectedCategory={selectedCategory}
+              onCategoryChange={handleCategoryChange}
             />
 
             {/* Products Grid */}
@@ -112,13 +139,13 @@ const Shop = () => {
               <div className="text-center py-20">
                 <p className="text-muted-foreground">{error}</p>
               </div>
-            ) : products.length === 0 ? (
+            ) : filteredProducts.length === 0 ? (
               <div className="text-center py-20">
                 <p className="text-muted-foreground">No products found</p>
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-                {products.map((product, index) => (
+                {filteredProducts.map((product, index) => (
                   <ProductCard key={product.node.id} product={product} index={index} />
                 ))}
               </div>
