@@ -1,8 +1,47 @@
 import { Instagram, MapPin, Mail, Phone, Linkedin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const Footer = () => {
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !email.includes("@")) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from("newsletter_subscribers")
+        .insert({ email: email.toLowerCase().trim() });
+
+      if (error) {
+        if (error.code === "23505") {
+          toast.info("You're already subscribed!");
+        } else {
+          throw error;
+        }
+      } else {
+        toast.success("Thanks for subscribing! 🎉");
+        setEmail("");
+      }
+    } catch (error) {
+      console.error("Newsletter signup error:", error);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const scrollToSection = (sectionId: string) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
   };
@@ -110,13 +149,25 @@ export const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Stay Updated</h4>
             <p className="text-sm text-muted-foreground mb-4">
-              Sign up to get updates on our launch and exclusive drops.
+              Sign up to get updates on new drops and exclusive offers.
             </p>
-            <div className="flex gap-2">
-              <Input type="email" placeholder="Email address" className="bg-secondary border-border text-sm" />
-              <Button className="gradient-brand text-primary-foreground shrink-0">→</Button>
-            </div>
-            <p className="text-xs text-muted-foreground mt-3">Coming Soon...</p>
+            <form onSubmit={handleNewsletterSubmit} className="flex gap-2">
+              <Input 
+                type="email" 
+                placeholder="Email address" 
+                className="bg-secondary border-border text-sm"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isSubmitting}
+              />
+              <Button 
+                type="submit"
+                className="gradient-brand text-primary-foreground shrink-0"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "..." : "→"}
+              </Button>
+            </form>
           </div>
         </div>
 
@@ -124,14 +175,14 @@ export const Footer = () => {
         <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">© 2024 Aspire | Manifest. All rights reserved.</p>
           <div className="flex gap-6 text-sm text-muted-foreground">
+            <Link to="/size-guide" className="hover:text-foreground transition-colors">
+              Size Guide
+            </Link>
             <a href="#" className="hover:text-foreground transition-colors">
               Privacy Policy
             </a>
             <a href="#" className="hover:text-foreground transition-colors">
               Terms of Service
-            </a>
-            <a href="#" className="hover:text-foreground transition-colors">
-              Shipping & Returns
             </a>
           </div>
         </div>
