@@ -12,11 +12,11 @@ type SortOption = "newest" | "price-asc" | "price-desc";
 
 interface ProductFiltersProps {
   collections: string[];
-  selectedCollection: string | null;
-  onCollectionChange: (collection: string | null) => void;
+  selectedCollections: string[];
+  onCollectionChange: (collections: string[]) => void;
   categories: string[];
-  selectedCategory: string | null;
-  onCategoryChange: (category: string | null) => void;
+  selectedCategories: string[];
+  onCategoryChange: (categories: string[]) => void;
   sortBy: SortOption;
   onSortChange: (sort: SortOption) => void;
 }
@@ -35,26 +35,42 @@ const sortOptions = [
 
 export const ProductFilters = ({
   collections,
-  selectedCollection,
+  selectedCollections,
   onCollectionChange,
   categories,
-  selectedCategory,
+  selectedCategories,
   onCategoryChange,
   sortBy,
   onSortChange,
 }: ProductFiltersProps) => {
+  const toggleCollection = (collection: string) => {
+    if (selectedCollections.includes(collection)) {
+      onCollectionChange(selectedCollections.filter(c => c !== collection));
+    } else {
+      onCollectionChange([...selectedCollections, collection]);
+    }
+  };
+
+  const toggleCategory = (category: string) => {
+    if (selectedCategories.includes(category)) {
+      onCategoryChange(selectedCategories.filter(c => c !== category));
+    } else {
+      onCategoryChange([...selectedCategories, category]);
+    }
+  };
+
   return (
     <div className="space-y-4 mb-8">
       {/* Collection Filters */}
       <div className="flex flex-wrap items-center justify-center gap-2">
         <span className="text-sm text-muted-foreground mr-2">Collection:</span>
         <Button
-          variant={selectedCollection === null ? "default" : "outline"}
+          variant={selectedCollections.length === 0 ? "default" : "outline"}
           size="sm"
-          onClick={() => onCollectionChange(null)}
+          onClick={() => onCollectionChange([])}
           className={cn(
             "transition-all",
-            selectedCollection === null && "bg-primary text-primary-foreground"
+            selectedCollections.length === 0 && "bg-primary text-primary-foreground"
           )}
         >
           All
@@ -62,12 +78,12 @@ export const ProductFilters = ({
         {collections.map((collection) => (
           <Button
             key={collection}
-            variant={selectedCollection === collection ? "default" : "outline"}
+            variant={selectedCollections.includes(collection) ? "default" : "outline"}
             size="sm"
-            onClick={() => onCollectionChange(collection)}
+            onClick={() => toggleCollection(collection)}
             className={cn(
               "transition-all",
-              selectedCollection === collection && "bg-primary text-primary-foreground"
+              selectedCollections.includes(collection) && "bg-primary text-primary-foreground"
             )}
           >
             {collectionNames[collection] || collection}
@@ -79,12 +95,12 @@ export const ProductFilters = ({
       <div className="flex flex-wrap items-center justify-center gap-2">
         <span className="text-sm text-muted-foreground mr-2">Category:</span>
         <Button
-          variant={selectedCategory === null ? "default" : "outline"}
+          variant={selectedCategories.length === 0 ? "default" : "outline"}
           size="sm"
-          onClick={() => onCategoryChange(null)}
+          onClick={() => onCategoryChange([])}
           className={cn(
             "transition-all",
-            selectedCategory === null && "bg-primary text-primary-foreground"
+            selectedCategories.length === 0 && "bg-primary text-primary-foreground"
           )}
         >
           All
@@ -92,12 +108,12 @@ export const ProductFilters = ({
         {categories.map((category) => (
           <Button
             key={category}
-            variant={selectedCategory === category ? "default" : "outline"}
+            variant={selectedCategories.includes(category) ? "default" : "outline"}
             size="sm"
-            onClick={() => onCategoryChange(category)}
+            onClick={() => toggleCategory(category)}
             className={cn(
               "transition-all",
-              selectedCategory === category && "bg-primary text-primary-foreground"
+              selectedCategories.includes(category) && "bg-primary text-primary-foreground"
             )}
           >
             {category}
