@@ -64,6 +64,7 @@ export const Hero = () => {
               size="lg"
               variant="outline"
               className="border-border hover:bg-secondary/50"
+              onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
             >
               Our Story
             </Button>
