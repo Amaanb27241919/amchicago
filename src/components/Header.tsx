@@ -57,18 +57,12 @@ export const Header = () => {
             >
               Home
             </button>
-            <button
-              onClick={() => scrollToSection("shop")}
+            <Link
+              to="/shop"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Shop
-            </button>
-            <button
-              onClick={() => scrollToSection("collections")}
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Collections
-            </button>
+            </Link>
             <button
               onClick={() => scrollToSection("about")}
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
@@ -135,18 +129,13 @@ export const Header = () => {
               >
                 Home
               </button>
-              <button
-                onClick={() => scrollToSection("shop")}
+              <Link
+                to="/shop"
+                onClick={() => setMobileMenuOpen(false)}
                 className="text-sm font-medium text-foreground py-2 text-left"
               >
                 Shop
-              </button>
-              <button
-                onClick={() => scrollToSection("collections")}
-                className="text-sm font-medium text-foreground py-2 text-left"
-              >
-                Collections
-              </button>
+              </Link>
               <button
                 onClick={() => scrollToSection("about")}
                 className="text-sm font-medium text-foreground py-2 text-left"
