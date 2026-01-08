@@ -27,7 +27,7 @@ const collections = [
   },
 ];
 
-const categories = ["Hoodie", "T-Shirt", "Joggers", "Shorts", "Crewneck"];
+const categories = ["Hoodie", "T-Shirt", "Jogger", "Crew", "Bomber Jacket", "Parka", "Long Sleeve", "Zip-Polo"];
 
 type SortOption = "newest" | "price-asc" | "price-desc";
 
