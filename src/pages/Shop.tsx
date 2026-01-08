@@ -29,6 +29,8 @@ const collections = [
 
 const categories = ["Hoodie", "T-Shirt", "Joggers", "Shorts", "Crewneck"];
 
+type SortOption = "newest" | "price-asc" | "price-desc";
+
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [allProducts, setAllProducts] = useState<ShopifyProduct[]>([]);
@@ -37,6 +39,7 @@ const Shop = () => {
   
   const selectedCollection = searchParams.get("collection");
   const selectedCategory = searchParams.get("category");
+  const sortBy = (searchParams.get("sort") as SortOption) || "newest";
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -56,7 +59,7 @@ const Shop = () => {
   }, []);
 
   const filteredProducts = useMemo(() => {
-    let result = allProducts;
+    let result = [...allProducts];
 
     // Filter by collection
     if (selectedCollection) {
@@ -73,8 +76,24 @@ const Shop = () => {
       );
     }
 
+    // Sort products
+    result.sort((a, b) => {
+      const priceA = parseFloat(a.node.priceRange.minVariantPrice.amount);
+      const priceB = parseFloat(b.node.priceRange.minVariantPrice.amount);
+      
+      switch (sortBy) {
+        case "price-asc":
+          return priceA - priceB;
+        case "price-desc":
+          return priceB - priceA;
+        case "newest":
+        default:
+          return 0; // Keep original order (newest first from Shopify)
+      }
+    });
+
     return result;
-  }, [allProducts, selectedCollection, selectedCategory]);
+  }, [allProducts, selectedCollection, selectedCategory, sortBy]);
 
   const handleCollectionChange = (collection: string | null) => {
     const params = new URLSearchParams(searchParams);
@@ -93,6 +112,12 @@ const Shop = () => {
     } else {
       params.delete("category");
     }
+    setSearchParams(params);
+  };
+
+  const handleSortChange = (sort: SortOption) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("sort", sort);
     setSearchParams(params);
   };
 
@@ -128,6 +153,8 @@ const Shop = () => {
               categories={categories}
               selectedCategory={selectedCategory}
               onCategoryChange={handleCategoryChange}
+              sortBy={sortBy}
+              onSortChange={handleSortChange}
             />
 
             {/* Products Grid */}
