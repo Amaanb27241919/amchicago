@@ -48,10 +48,15 @@ export const NewArrivals = () => {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-semibold">
-            <span className="text-red-600">CHECK OUT</span>{" "}
-            <span className="text-[#1a1a1a]">HOPE V1</span>
+          <p className="text-[#1a1a1a] text-sm font-medium uppercase tracking-wider mb-2">
+            Introducing
+          </p>
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-semibold text-[#1a1a1a]">
+            Our Newest Arrivals
           </h2>
+          <p className="text-gray-600 text-lg mt-2">
+            Check out Hope V1
+          </p>
         </motion.div>
 
         {/* Product grid */}
