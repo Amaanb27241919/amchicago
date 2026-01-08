@@ -7,19 +7,19 @@ const collections = [
     name: "Founders Series",
     description: "Premium essentials for the visionaries",
     query: "Founders",
-    image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800&auto=format&fit=crop&q=80",
+    image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&auto=format&fit=crop&q=80",
   },
   {
     name: "Hope V1",
     description: "Bold statements, timeless style",
     query: "Hope",
-    image: "https://images.unsplash.com/photo-1578932750294-f5075e85f44a?w=800&auto=format&fit=crop&q=80",
+    image: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=800&auto=format&fit=crop&q=80",
   },
   {
     name: "A | M Essentials",
     description: "Everyday luxury streetwear",
     query: "A | M",
-    image: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800&auto=format&fit=crop&q=80",
+    image: "https://images.unsplash.com/photo-1507680434567-5739c80be1ac?w=800&auto=format&fit=crop&q=80",
   },
 ];
 
