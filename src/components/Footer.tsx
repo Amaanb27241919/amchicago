@@ -80,7 +80,7 @@ export const Footer = () => {
             </p>
             <div className="flex gap-3">
               <a
-                href="https://www.instagram.com/amthreads_chicago"
+                href="https://www.instagram.com/a.m.threads_chicago"
                 target="_blank"
                 rel="noopener noreferrer"
               >
