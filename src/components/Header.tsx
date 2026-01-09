@@ -92,7 +92,7 @@ export const Header = () => {
           <div className="flex items-center gap-1 sm:gap-2">
             <HeaderSearch />
             <a
-              href="https://www.instagram.com/amthreads_chicago"
+              href="https://www.instagram.com/a.m.threads_chicago"
               target="_blank"
               rel="noopener noreferrer"
               className="hidden sm:flex"
