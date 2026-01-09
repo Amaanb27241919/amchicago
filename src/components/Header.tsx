@@ -5,7 +5,7 @@ import { useCartStore } from "@/stores/cartStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-
+import { HeaderSearch } from "@/components/HeaderSearch";
 export const Header = () => {
   const { getTotalItems, setOpen } = useCartStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -90,6 +90,7 @@ export const Header = () => {
 
           {/* Right side */}
           <div className="flex items-center gap-1 sm:gap-2">
+            <HeaderSearch />
             <a
               href="https://www.instagram.com/amthreads_chicago"
               target="_blank"

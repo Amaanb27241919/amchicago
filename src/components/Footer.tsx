@@ -192,17 +192,26 @@ export const Footer = () => {
 
         {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-muted-foreground">© 2024 Aspire | Manifest. All rights reserved.</p>
-          <div className="flex gap-6 text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground">© 2025 Aspire | Manifest. All rights reserved.</p>
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-6 text-sm text-muted-foreground">
             <Link to="/size-guide" className="hover:text-foreground transition-colors">
               Size Guide
             </Link>
-            <a href="#" className="hover:text-foreground transition-colors">
-              Privacy Policy
-            </a>
-            <a href="#" className="hover:text-foreground transition-colors">
-              Terms of Service
-            </a>
+            <Link to="/faq" className="hover:text-foreground transition-colors">
+              FAQ
+            </Link>
+            <Link to="/shipping" className="hover:text-foreground transition-colors">
+              Shipping
+            </Link>
+            <Link to="/returns" className="hover:text-foreground transition-colors">
+              Returns
+            </Link>
+            <Link to="/privacy-policy" className="hover:text-foreground transition-colors">
+              Privacy
+            </Link>
+            <Link to="/terms" className="hover:text-foreground transition-colors">
+              Terms
+            </Link>
           </div>
         </div>
       </div>

@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Minus, Plus, ShoppingBag, Loader2 } from "lucide-react";
+import { ArrowLeft, Minus, Plus, ShoppingBag, Loader2, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { fetchProductByHandle, formatPrice, ShopifyProduct } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cartStore";
 import { Header } from "@/components/Header";
 import { CartDrawer } from "@/components/CartDrawer";
+import { RelatedProducts } from "@/components/RelatedProducts";
+import { RecentlyViewed } from "@/components/RecentlyViewed";
 import { toast } from "sonner";
 import { logError } from "@/lib/logger";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
+import { useWishlist } from "@/hooks/useWishlist";
 
 const ProductDetail = () => {
   const { handle } = useParams<{ handle: string }>();
@@ -19,6 +23,8 @@ const ProductDetail = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const { addItem, setOpen } = useCartStore();
+  const { addProduct: addToRecentlyViewed } = useRecentlyViewed();
+  const { isInWishlist, toggleWishlist } = useWishlist();
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -26,6 +32,15 @@ const ProductDetail = () => {
       try {
         const data = await fetchProductByHandle(handle);
         setProduct(data);
+        // Add to recently viewed
+        if (data) {
+          addToRecentlyViewed({
+            handle: data.handle,
+            title: data.title,
+            image: data.images.edges[0]?.node.url || "",
+            price: data.priceRange.minVariantPrice.amount,
+          });
+        }
       } catch (err) {
         logError("Failed to load product:", err);
       } finally {
@@ -33,7 +48,7 @@ const ProductDetail = () => {
       }
     };
     loadProduct();
-  }, [handle]);
+  }, [handle, addToRecentlyViewed]);
 
   // Dynamic SEO for product pages
   usePageMeta({
@@ -220,17 +235,38 @@ const ProductDetail = () => {
               </div>
 
               {/* Add to cart */}
-              <Button
-                size="lg"
-                className="w-full gradient-brand text-primary-foreground font-semibold glow-brand"
-                onClick={handleAddToCart}
-                disabled={!selectedVariant?.availableForSale}
-              >
-                <ShoppingBag className="w-5 h-5 mr-2" />
-                {selectedVariant?.availableForSale ? "Add to Bag" : "Sold Out"}
-              </Button>
+              <div className="flex gap-3">
+                <Button
+                  size="lg"
+                  className="flex-1 gradient-brand text-primary-foreground font-semibold glow-brand"
+                  onClick={handleAddToCart}
+                  disabled={!selectedVariant?.availableForSale}
+                >
+                  <ShoppingBag className="w-5 h-5 mr-2" />
+                  {selectedVariant?.availableForSale ? "Add to Bag" : "Sold Out"}
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className={`px-4 ${isInWishlist(handle || "") ? "text-red-500 border-red-500/50" : ""}`}
+                  onClick={() => toggleWishlist({
+                    handle: handle || "",
+                    title: product.title,
+                    image: images[0]?.node.url || "",
+                    price: product.priceRange.minVariantPrice.amount,
+                  })}
+                >
+                  <Heart className={`w-5 h-5 ${isInWishlist(handle || "") ? "fill-current" : ""}`} />
+                </Button>
+              </div>
             </motion.div>
           </div>
+
+          {/* Related Products */}
+          <RelatedProducts currentHandle={handle || ""} currentTitle={product.title} />
+          
+          {/* Recently Viewed */}
+          <RecentlyViewed currentHandle={handle} />
         </div>
       </main>
     </div>
