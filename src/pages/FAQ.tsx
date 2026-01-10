@@ -40,7 +40,7 @@ const faqs = [
       },
       {
         q: "How do I start a return or exchange?",
-        a: "Email us at am.threads.chicago@gmail.com with your order number and reason for return. We'll provide you with return instructions and a prepaid shipping label.",
+        a: "Email us at support@amthreads.shop with your order number and reason for return. We'll provide you with return instructions and a prepaid shipping label.",
       },
       {
         q: "How long do refunds take?",
