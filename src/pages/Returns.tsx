@@ -99,8 +99,8 @@ const Returns = () => {
               <ol className="list-decimal pl-6 space-y-3">
                 <li>
                   <strong className="text-foreground">Email us</strong> at{" "}
-                  <a href="mailto:am.threads.chicago@gmail.com" className="text-primary hover:underline">
-                    am.threads.chicago@gmail.com
+                  <a href="mailto:support@amthreads.shop" className="text-primary hover:underline">
+                    support@amthreads.shop
                   </a>{" "}
                   with your order number and reason for return.
                 </li>
@@ -149,8 +149,8 @@ const Returns = () => {
               </h2>
               <p>
                 Received a damaged or defective item? We're sorry! Contact us immediately at{" "}
-                <a href="mailto:am.threads.chicago@gmail.com" className="text-primary hover:underline">
-                  am.threads.chicago@gmail.com
+                <a href="mailto:support@amthreads.shop" className="text-primary hover:underline">
+                  support@amthreads.shop
                 </a>{" "}
                 with photos of the issue, and we'll make it right with a replacement or full refund, 
                 including shipping costs.

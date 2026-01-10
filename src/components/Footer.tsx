@@ -153,8 +153,8 @@ export const Footer = () => {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-primary" />
-                <a href="mailto:am.threads.chicago@gmail.com" className="hover:text-foreground transition-colors">
-                  am.threads.chicago@gmail.com
+                <a href="mailto:support@amthreads.shop" className="hover:text-foreground transition-colors">
+                  support@amthreads.shop
                 </a>
               </li>
               <li className="flex items-center gap-2">

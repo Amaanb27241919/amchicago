@@ -107,8 +107,8 @@ const PrivacyPolicy = () => {
               </h2>
               <p>
                 If you have questions about this Privacy Policy, please contact us at{" "}
-                <a href="mailto:am.threads.chicago@gmail.com" className="text-primary hover:underline">
-                  am.threads.chicago@gmail.com
+                <a href="mailto:support@amthreads.shop" className="text-primary hover:underline">
+                  support@amthreads.shop
                 </a>
               </p>
             </section>

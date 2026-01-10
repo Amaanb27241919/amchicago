@@ -211,7 +211,7 @@ const SizeGuide = () => {
                 <li>• For a more fitted look, consider sizing down</li>
                 <li>• T-shirts are true to size with a comfortable regular fit</li>
                 <li>• Joggers feature an elastic waist with adjustable drawstring</li>
-                <li>• When in doubt, reach out to us at am.threads.chicago@gmail.com</li>
+                <li>• When in doubt, reach out to us at support@amthreads.shop</li>
               </ul>
             </motion.div>
           </motion.div>
