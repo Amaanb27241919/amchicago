@@ -53,6 +53,12 @@ export const About = () => {
               </p>
             </div>
 
+            {/* Signature */}
+            <div className="mt-8 pt-6 border-t border-border/50">
+              <p className="font-display text-xl font-semibold gradient-brand-text">A | M Chicago</p>
+              <p className="text-sm text-muted-foreground italic mt-1">Built on legacy. Designed for the future.</p>
+            </div>
+
             {/* Stats */}
             <div className="grid grid-cols-3 gap-6 mt-10 pt-10 border-t border-border">
               <div>
