@@ -27,7 +27,7 @@ const faqs = [
       },
       {
         q: "Can I modify or cancel my order?",
-        a: "We process orders quickly! If you need to modify or cancel, please contact us immediately at am.threads.chicago@gmail.com. We'll do our best to accommodate changes before the order ships.",
+        a: "We process orders quickly! If you need to modify or cancel, please contact us immediately at support@amthreads.shop. We'll do our best to accommodate changes before the order ships.",
       },
     ],
   },
@@ -135,10 +135,10 @@ const FAQ = () => {
               We're here to help. Reach out to our team for personalized assistance.
             </p>
             <a
-              href="mailto:am.threads.chicago@gmail.com"
+              href="mailto:support@amthreads.shop"
               className="inline-flex items-center gap-2 text-primary hover:underline"
             >
-              am.threads.chicago@gmail.com
+              support@amthreads.shop
             </a>
           </div>
         </div>

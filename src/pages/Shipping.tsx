@@ -114,8 +114,8 @@ const Shipping = () => {
               </h2>
               <p>
                 If your package is lost, damaged, or significantly delayed, please contact us at{" "}
-                <a href="mailto:am.threads.chicago@gmail.com" className="text-primary hover:underline">
-                  am.threads.chicago@gmail.com
+                <a href="mailto:support@amthreads.shop" className="text-primary hover:underline">
+                  support@amthreads.shop
                 </a>
                 . We'll work with the carrier to resolve the issue and ensure you receive your order.
               </p>
