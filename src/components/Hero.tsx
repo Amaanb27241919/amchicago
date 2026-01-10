@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import aspireManifestLogo from "@/assets/aspire-manifest-logo.png";
 
 export const Hero = () => {
   return (
@@ -19,15 +20,15 @@ export const Hero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          {/* Tagline */}
-          <motion.p
+          {/* Logo */}
+          <motion.img
+            src={aspireManifestLogo}
+            alt="Aspire | Manifest Chicago"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-sm sm:text-base tracking-[0.3em] uppercase text-muted-foreground mb-6"
-          >
-            Aspire • Manifest
-          </motion.p>
+            className="h-16 sm:h-20 md:h-24 w-auto mx-auto mb-6"
+          />
 
           {/* Main heading */}
           <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold mb-6 tracking-tight">
