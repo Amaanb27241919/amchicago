@@ -263,6 +263,7 @@ export async function createStorefrontCheckout(items: Array<{ variantId: string;
 
     const url = new URL(cart.checkoutUrl);
     url.searchParams.set('channel', 'online_store');
+    url.searchParams.set('return_to', `${window.location.origin}/shop`);
     return url.toString();
   } catch (error) {
     logError('Error creating storefront checkout:', error);

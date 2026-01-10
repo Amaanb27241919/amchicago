@@ -6,7 +6,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { ShoppingBag, Minus, Plus, Trash2, ExternalLink, Loader2 } from "lucide-react";
+import { ShoppingBag, Minus, Plus, Trash2, ArrowRight, Loader2 } from "lucide-react";
 import { useCartStore } from "@/stores/cartStore";
 import { formatPrice } from "@/lib/shopify";
 import { motion, AnimatePresence } from "framer-motion";
@@ -33,8 +33,7 @@ export const CartDrawer = () => {
       await createCheckout();
       const checkoutUrl = useCartStore.getState().checkoutUrl;
       if (checkoutUrl) {
-        window.open(checkoutUrl, '_blank');
-        setOpen(false);
+        window.location.href = checkoutUrl;
       }
     } catch (error) {
       logError('Checkout failed:', error);
@@ -159,8 +158,8 @@ export const CartDrawer = () => {
                     </>
                   ) : (
                     <>
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      Checkout
+                      <ArrowRight className="w-4 h-4 mr-2" />
+                      Proceed to Checkout
                     </>
                   )}
                 </Button>
