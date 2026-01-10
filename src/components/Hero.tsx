@@ -27,7 +27,7 @@ export const Hero = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="h-32 sm:h-40 md:h-48 w-auto mx-auto mb-2"
+            className="h-44 sm:h-56 md:h-64 lg:h-72 w-auto mx-auto mb-0"
           />
 
           {/* Main heading */}
