@@ -76,13 +76,13 @@ export const Header = () => {
           <Link to="/" className="absolute left-1/2 -translate-x-1/2">
             <motion.div
               initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={{ opacity: 0.75, y: 0 }}
               className="flex flex-col items-center"
             >
-              <span className="text-2xl sm:text-3xl font-display font-semibold tracking-wide gradient-brand-text">
+              <span className="text-lg sm:text-xl font-display font-medium tracking-wide text-muted-foreground">
                 A | M
               </span>
-              <span className="text-[10px] sm:text-xs tracking-[0.3em] text-muted-foreground uppercase">
+              <span className="text-[8px] sm:text-[9px] tracking-[0.25em] text-muted-foreground/70 uppercase">
                 Chicago
               </span>
             </motion.div>
