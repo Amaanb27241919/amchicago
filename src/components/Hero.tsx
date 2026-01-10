@@ -25,14 +25,14 @@ export const Hero = () => {
             src={aspireManifestLogo}
             alt="Aspire | Manifest Chicago"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            animate={{ opacity: 0.85 }}
             transition={{ delay: 0.2 }}
-            className="h-32 sm:h-44 md:h-56 w-auto mx-auto mb-6"
+            className="h-20 sm:h-24 md:h-28 w-auto mx-auto mb-2"
           />
 
           {/* Main heading */}
           <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold mb-6 tracking-tight">
-            <span className="gradient-brand-text glow-text">Elevate</span>
+            <span className="bg-gradient-to-r from-brand-purple via-brand-magenta to-brand-purple bg-clip-text text-transparent glow-text">Elevate</span>
             <br />
             <span className="text-foreground">Your Style</span>
           </h1>
