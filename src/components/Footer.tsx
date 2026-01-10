@@ -92,7 +92,7 @@ export const Footer = () => {
             </p>
             <div className="flex gap-3">
               <motion.a
-                href="https://www.instagram.com/a.m.threads_chicago"
+                href="https://www.instagram.com/amthreads_chicago"
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.1 }}
