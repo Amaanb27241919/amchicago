@@ -157,7 +157,7 @@ const Contact = () => {
                 <h3 className="font-medium mb-4">Follow Us</h3>
                 <div className="flex gap-3">
                   <a
-                    href="https://www.instagram.com/amthreads_chicago"
+                    href="https://www.instagram.com/a.m.threads_chicago"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
