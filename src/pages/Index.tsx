@@ -6,6 +6,7 @@ import { About } from "@/components/About";
 import { Footer } from "@/components/Footer";
 import { CartDrawer } from "@/components/CartDrawer";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { PageTransition } from "@/components/PageTransition";
 
 const Index = () => {
   usePageMeta({
@@ -19,12 +20,14 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <CartDrawer />
-      <main>
-        <Hero />
-        <LatestDrops />
-        <Collections />
-        <About />
-      </main>
+      <PageTransition>
+        <main>
+          <Hero />
+          <LatestDrops />
+          <Collections />
+          <About />
+        </main>
+      </PageTransition>
       <Footer />
     </div>
   );

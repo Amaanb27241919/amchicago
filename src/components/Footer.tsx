@@ -6,6 +6,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { logError } from "@/lib/logger";
+import { motion } from "framer-motion";
 
 // Email validation regex - checks for proper format with TLD
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -66,11 +67,22 @@ export const Footer = () => {
   };
 
   return (
-    <footer className="bg-card border-t border-border">
+    <motion.footer
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6 }}
+      className="bg-card border-t border-border"
+    >
       <div className="container mx-auto px-4 sm:px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+          >
             <div className="mb-4">
               <span className="text-3xl font-display font-semibold gradient-brand-text">A | M</span>
               <p className="text-xs tracking-[0.3em] text-muted-foreground uppercase mt-1">Chicago</p>
@@ -79,10 +91,12 @@ export const Footer = () => {
               Premium streetwear rooted in Chicago. Designed for those who dare to aspire and manifest their vision.
             </p>
             <div className="flex gap-3">
-              <a
+              <motion.a
                 href="https://www.instagram.com/a.m.threads_chicago"
                 target="_blank"
                 rel="noopener noreferrer"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <Button
                   variant="outline"
@@ -91,11 +105,13 @@ export const Footer = () => {
                 >
                   <Instagram className="h-4 w-4" />
                 </Button>
-              </a>
-              <a
+              </motion.a>
+              <motion.a
                 href="https://www.linkedin.com/company/a-m-chicago/"
                 target="_blank"
                 rel="noopener noreferrer"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <Button
                   variant="outline"
@@ -104,12 +120,17 @@ export const Footer = () => {
                 >
                   <Linkedin className="h-4 w-4" />
                 </Button>
-              </a>
+              </motion.a>
             </div>
-          </div>
+          </motion.div>
 
           {/* Shop Links */}
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
             <h4 className="font-semibold mb-4">Shop</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li>
@@ -141,10 +162,15 @@ export const Footer = () => {
                 </button>
               </li>
             </ul>
-          </div>
+          </motion.div>
 
           {/* Contact */}
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+          >
             <h4 className="font-semibold mb-4">Contact</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li className="flex items-center gap-2">
@@ -162,10 +188,15 @@ export const Footer = () => {
                 <span>(312) 555-0123</span>
               </li>
             </ul>
-          </div>
+          </motion.div>
 
           {/* Newsletter */}
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+          >
             <h4 className="font-semibold mb-4">Stay Updated</h4>
             <p className="text-sm text-muted-foreground mb-4">
               Sign up to get updates on new drops and exclusive offers.
@@ -179,19 +210,27 @@ export const Footer = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isSubmitting}
               />
-              <Button 
-                type="submit"
-                className="gradient-brand text-primary-foreground shrink-0"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "..." : "→"}
-              </Button>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button 
+                  type="submit"
+                  className="gradient-brand text-primary-foreground shrink-0"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "..." : "→"}
+                </Button>
+              </motion.div>
             </form>
-          </div>
+          </motion.div>
         </div>
 
         {/* Bottom */}
-        <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+          className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4"
+        >
           <p className="text-sm text-muted-foreground">© 2025 Aspire | Manifest. All rights reserved.</p>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6 text-sm text-muted-foreground">
             <Link to="/size-guide" className="hover:text-foreground transition-colors">
@@ -213,8 +252,8 @@ export const Footer = () => {
               Terms
             </Link>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </footer>
+    </motion.footer>
   );
 };

@@ -45,13 +45,22 @@ export const ProductCard = ({ product, index }: ProductCardProps) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 30, scale: 0.95 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
+      transition={{ 
+        duration: 0.5, 
+        delay: index * 0.08,
+        ease: [0.25, 0.46, 0.45, 0.94] 
+      }}
+      whileHover={{ y: -6 }}
     >
       <Link to={`/product/${node.handle}`} className="group block">
-        <div className="relative overflow-hidden rounded-lg bg-card aspect-[3/4] mb-4">
+        <motion.div
+          className="relative overflow-hidden rounded-lg bg-card aspect-[3/4] mb-4"
+          whileHover={{ scale: 1.02 }}
+          transition={{ duration: 0.3 }}
+        >
           {/* Primary image */}
           {firstImage && (
             <img
@@ -74,7 +83,11 @@ export const ProductCard = ({ product, index }: ProductCardProps) => {
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
           {/* Quick actions */}
-          <div className="absolute bottom-4 left-4 right-4 flex gap-2 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            whileHover={{ y: 0, opacity: 1 }}
+            className="absolute bottom-4 left-4 right-4 flex gap-2 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300"
+          >
             <Button
               size="sm"
               className="flex-1 gradient-brand text-primary-foreground font-medium"
@@ -90,17 +103,19 @@ export const ProductCard = ({ product, index }: ProductCardProps) => {
             >
               <Eye className="w-4 h-4" />
             </Button>
-          </div>
+          </motion.div>
 
           {/* Hover shine effect */}
           <div className="absolute inset-0 hover-shine pointer-events-none" />
-        </div>
+        </motion.div>
 
         {/* Product info */}
         <div className="space-y-1">
-          <h3 className="font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">
+          <motion.h3
+            className="font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1"
+          >
             {node.title}
-          </h3>
+          </motion.h3>
           <p className="text-sm font-semibold gradient-brand-text">
             {formatPrice(price.amount, price.currencyCode)}
           </p>
