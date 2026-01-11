@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Minus, Plus, ShoppingBag, Loader2, Heart } from "lucide-react";
@@ -14,6 +14,41 @@ import { logError } from "@/lib/logger";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 import { useWishlist } from "@/hooks/useWishlist";
+import { cn } from "@/lib/utils";
+
+// Map color names to CSS colors
+const colorMap: Record<string, string> = {
+  black: "#000000",
+  white: "#FFFFFF",
+  red: "#DC2626",
+  blue: "#2563EB",
+  navy: "#1E3A5F",
+  green: "#16A34A",
+  gray: "#6B7280",
+  grey: "#6B7280",
+  brown: "#92400E",
+  beige: "#D4C4A8",
+  cream: "#FFFDD0",
+  tan: "#D2B48C",
+  olive: "#808000",
+  burgundy: "#800020",
+  maroon: "#800000",
+  pink: "#EC4899",
+  purple: "#9333EA",
+  orange: "#EA580C",
+  yellow: "#EAB308",
+  gold: "#D4AF37",
+  silver: "#C0C0C0",
+  charcoal: "#36454F",
+  heather: "#9CA3AF",
+  "heather gray": "#9CA3AF",
+  "heather grey": "#9CA3AF",
+};
+
+const getColorValue = (colorName: string): string => {
+  const normalized = colorName.toLowerCase().trim();
+  return colorMap[normalized] || "#9CA3AF";
+};
 
 const ProductDetail = () => {
   const { handle } = useParams<{ handle: string }>();
@@ -22,6 +57,7 @@ const ProductDetail = () => {
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const { addItem, setOpen } = useCartStore();
   const { addProduct: addToRecentlyViewed } = useRecentlyViewed();
   const { isInWishlist, toggleWishlist } = useWishlist();
@@ -82,6 +118,55 @@ const ProductDetail = () => {
 
   const selectedVariant = product.variants.edges[selectedVariantIndex]?.node;
   const images = product.images.edges;
+
+  // Extract color option
+  const colorOption = product.options.find(
+    (opt) => opt.name.toLowerCase() === "color" || opt.name.toLowerCase() === "colour"
+  );
+  const colors = colorOption?.values || [];
+
+  // Initialize selected color
+  useEffect(() => {
+    if (colors.length > 0 && !selectedColor) {
+      setSelectedColor(colors[0]);
+    }
+  }, [colors, selectedColor]);
+
+  // Build color to image index map
+  const colorImageMap = useMemo(() => {
+    const map: Record<string, number> = {};
+    if (!colorOption) return map;
+
+    colors.forEach((color, index) => {
+      // Try to match color to image by index
+      if (index < images.length) {
+        map[color] = index;
+      }
+    });
+
+    return map;
+  }, [colorOption, colors, images.length]);
+
+  // Update image when color changes
+  const handleColorSelect = (color: string) => {
+    setSelectedColor(color);
+    
+    // Find variant with this color
+    const variantIndex = product.variants.edges.findIndex((v) =>
+      v.node.selectedOptions.some(
+        (o) => (o.name.toLowerCase() === "color" || o.name.toLowerCase() === "colour") && o.value === color
+      )
+    );
+    
+    if (variantIndex >= 0) {
+      setSelectedVariantIndex(variantIndex);
+    }
+
+    // Update image to match color
+    if (colorImageMap[color] !== undefined) {
+      setSelectedImage(colorImageMap[color]);
+    }
+  };
 
   const handleAddToCart = () => {
     if (!selectedVariant) return;
@@ -177,8 +262,55 @@ const ProductDetail = () => {
                 {product.description}
               </p>
 
-              {/* Options */}
-              {product.options.map((option) => (
+              {/* Color swatches */}
+              {colors.length > 1 && (
+                <div className="mb-6">
+                  <label className="block text-sm font-medium mb-3">
+                    Color: <span className="text-muted-foreground">{selectedColor}</span>
+                  </label>
+                  <div className="flex flex-wrap gap-3">
+                    {colors.map((color) => {
+                      const isAvailable = product.variants.edges.some(
+                        (v) =>
+                          v.node.availableForSale &&
+                          v.node.selectedOptions.some(
+                            (o) =>
+                              (o.name.toLowerCase() === "color" || o.name.toLowerCase() === "colour") &&
+                              o.value === color
+                          )
+                      );
+
+                      return (
+                        <button
+                          key={color}
+                          onClick={() => handleColorSelect(color)}
+                          className={cn(
+                            "w-10 h-10 rounded-full border-2 transition-all duration-200 hover:scale-110 relative",
+                            selectedColor === color
+                              ? "border-primary ring-2 ring-primary ring-offset-2 ring-offset-background"
+                              : "border-border hover:border-muted-foreground",
+                            !isAvailable && "opacity-50"
+                          )}
+                          style={{ backgroundColor: getColorValue(color) }}
+                          title={color}
+                          aria-label={`Select ${color} color`}
+                        >
+                          {!isAvailable && (
+                            <span className="absolute inset-0 flex items-center justify-center">
+                              <span className="w-full h-0.5 bg-muted-foreground rotate-45 absolute" />
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Other Options (Size, etc.) */}
+              {product.options
+                .filter((option) => option.name.toLowerCase() !== "color" && option.name.toLowerCase() !== "colour")
+                .map((option) => (
                 <div key={option.name} className="mb-6">
                   <label className="block text-sm font-medium mb-3">{option.name}</label>
                   <div className="flex flex-wrap gap-2">
@@ -186,21 +318,33 @@ const ProductDetail = () => {
                       const variantIndex = product.variants.edges.findIndex(
                         (v) => v.node.selectedOptions.some(
                           (o) => o.name === option.name && o.value === value
-                        )
+                        ) && (!selectedColor || v.node.selectedOptions.some(
+                          (o) => (o.name.toLowerCase() === "color" || o.name.toLowerCase() === "colour") && o.value === selectedColor
+                        ))
                       );
                       const isSelected = selectedVariant?.selectedOptions.some(
                         (o) => o.name === option.name && o.value === value
                       );
+                      const variant = product.variants.edges.find(
+                        (v) => v.node.selectedOptions.some(
+                          (o) => o.name === option.name && o.value === value
+                        ) && (!selectedColor || v.node.selectedOptions.some(
+                          (o) => (o.name.toLowerCase() === "color" || o.name.toLowerCase() === "colour") && o.value === selectedColor
+                        ))
+                      );
+                      const isAvailable = variant?.node.availableForSale ?? true;
 
                       return (
                         <button
                           key={value}
                           onClick={() => variantIndex >= 0 && setSelectedVariantIndex(variantIndex)}
-                          className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
+                          className={cn(
+                            "px-4 py-2 rounded-lg border text-sm font-medium transition-all",
                             isSelected
                               ? "border-primary bg-primary/10 text-primary"
-                              : "border-border hover:border-muted-foreground"
-                          }`}
+                              : "border-border hover:border-muted-foreground",
+                            !isAvailable && "opacity-50 line-through"
+                          )}
                         >
                           {value}
                         </button>
