@@ -324,24 +324,44 @@ export const ProductCard = ({ product, index }: ProductCardProps) => {
             {formatPrice(price.amount, price.currencyCode)}
           </p>
           
-          {/* Color swatches */}
+          {/* Color swatches - show product thumbnails like Shopify */}
           {colors.length > 1 && (
             <div className="flex items-center gap-1.5 pt-1">
-              {colors.map((color) => (
-                <button
-                  key={color}
-                  onClick={(e) => handleColorClick(e, color)}
-                  className={cn(
-                    "w-5 h-5 rounded-full border-2 transition-all duration-200 hover:scale-110",
-                    selectedColor === color
-                      ? "border-primary ring-1 ring-primary ring-offset-1 ring-offset-background"
-                      : "border-border hover:border-muted-foreground"
-                  )}
-                  style={{ backgroundColor: getColorValue(color) }}
-                  title={color}
-                  aria-label={`Select ${color} color`}
-                />
-              ))}
+              {colors.slice(0, 5).map((color) => {
+                const swatchImage = colorImageMap[color];
+                return (
+                  <button
+                    key={color}
+                    onClick={(e) => handleColorClick(e, color)}
+                    className={cn(
+                      "w-6 h-6 rounded-full border transition-all duration-200 hover:scale-110 overflow-hidden bg-muted",
+                      selectedColor === color
+                        ? "border-foreground ring-1 ring-foreground/50"
+                        : "border-border hover:border-muted-foreground"
+                    )}
+                    title={color}
+                    aria-label={`Select ${color} color`}
+                  >
+                    {swatchImage ? (
+                      <img
+                        src={swatchImage}
+                        alt={color}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span 
+                        className="w-full h-full block"
+                        style={{ backgroundColor: getColorValue(color) }}
+                      />
+                    )}
+                  </button>
+                );
+              })}
+              {colors.length > 5 && (
+                <span className="text-xs text-muted-foreground">
+                  +{colors.length - 5}
+                </span>
+              )}
             </div>
           )}
         </div>
