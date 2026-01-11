@@ -9,6 +9,7 @@ import {
 } from "./ui/select";
 
 type SortOption = "newest" | "price-asc" | "price-desc";
+type AvailabilityFilter = "all" | "in-stock" | "sold-out";
 
 interface ProductFiltersProps {
   collections: string[];
@@ -17,6 +18,8 @@ interface ProductFiltersProps {
   categories: string[];
   selectedCategories: string[];
   onCategoryChange: (categories: string[]) => void;
+  availability: AvailabilityFilter;
+  onAvailabilityChange: (availability: AvailabilityFilter) => void;
   sortBy: SortOption;
   onSortChange: (sort: SortOption) => void;
   onClearAll: () => void;
@@ -34,6 +37,12 @@ const sortOptions = [
   { value: "price-desc", label: "Price: High to Low" },
 ];
 
+const availabilityOptions = [
+  { value: "all", label: "All" },
+  { value: "in-stock", label: "In Stock" },
+  { value: "sold-out", label: "Sold Out" },
+];
+
 export const ProductFilters = ({
   collections,
   selectedCollections,
@@ -41,11 +50,13 @@ export const ProductFilters = ({
   categories,
   selectedCategories,
   onCategoryChange,
+  availability,
+  onAvailabilityChange,
   sortBy,
   onSortChange,
   onClearAll,
 }: ProductFiltersProps) => {
-  const hasActiveFilters = selectedCollections.length > 0 || selectedCategories.length > 0 || sortBy !== "newest";
+  const hasActiveFilters = selectedCollections.length > 0 || selectedCategories.length > 0 || availability !== "all" || sortBy !== "newest";
   const toggleCollection = (collection: string) => {
     if (selectedCollections.includes(collection)) {
       onCollectionChange(selectedCollections.filter(c => c !== collection));
@@ -120,6 +131,25 @@ export const ProductFilters = ({
             )}
           >
             {category}
+          </Button>
+        ))}
+      </div>
+
+      {/* Availability Filter */}
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        <span className="text-sm text-muted-foreground mr-2">Availability:</span>
+        {availabilityOptions.map((option) => (
+          <Button
+            key={option.value}
+            variant={availability === option.value ? "default" : "outline"}
+            size="sm"
+            onClick={() => onAvailabilityChange(option.value as AvailabilityFilter)}
+            className={cn(
+              "transition-all",
+              availability === option.value && "bg-primary text-primary-foreground"
+            )}
+          >
+            {option.label}
           </Button>
         ))}
       </div>
