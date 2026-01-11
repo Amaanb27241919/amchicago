@@ -104,7 +104,7 @@ const ProductDetail = () => {
 
   // Build color to image index map using variant image data
   const colorImageMap = useMemo(() => {
-    const map: Record<string, number> = {};
+    const map: Record<string, { url: string; index: number }> = {};
     if (!colorOption || colors.length === 0 || images.length === 0 || !product) return map;
 
     colors.forEach((color) => {
@@ -121,9 +121,16 @@ const ProductDetail = () => {
         const imageIndex = images.findIndex(
           (img) => img.node.url === variantWithImage.node.image?.url || img.node.id === variantWithImage.node.image?.id
         );
-        map[color] = imageIndex >= 0 ? imageIndex : 0;
+        map[color] = {
+          url: variantWithImage.node.image.url,
+          index: imageIndex >= 0 ? imageIndex : 0,
+        };
       } else {
-        map[color] = 0;
+        // Fallback to first image
+        map[color] = {
+          url: images[0]?.node.url || "",
+          index: 0,
+        };
       }
     });
 
@@ -176,8 +183,8 @@ const ProductDetail = () => {
     }
 
     // Update image to match color
-    if (colorImageMap[color] !== undefined) {
-      setSelectedImage(colorImageMap[color]);
+    if (colorImageMap[color]) {
+      setSelectedImage(colorImageMap[color].index);
     }
   };
 
@@ -292,24 +299,36 @@ const ProductDetail = () => {
                               o.value === color
                           )
                       );
+                      const swatchImage = colorImageMap[color]?.url;
 
                       return (
                         <button
                           key={color}
                           onClick={() => handleColorSelect(color)}
                           className={cn(
-                            "w-10 h-10 rounded-full border-2 transition-all duration-200 hover:scale-110 relative",
+                            "w-10 h-10 rounded-full border-2 transition-all duration-200 hover:scale-110 relative overflow-hidden bg-muted",
                             selectedColor === color
                               ? "border-primary ring-2 ring-primary ring-offset-2 ring-offset-background"
                               : "border-border hover:border-muted-foreground",
                             !isAvailable && "opacity-50"
                           )}
-                          style={{ backgroundColor: getColorValue(color) }}
                           title={color}
                           aria-label={`Select ${color} color`}
                         >
+                          {swatchImage ? (
+                            <img
+                              src={swatchImage}
+                              alt={color}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <span
+                              className="w-full h-full block"
+                              style={{ backgroundColor: getColorValue(color) }}
+                            />
+                          )}
                           {!isAvailable && (
-                            <span className="absolute inset-0 flex items-center justify-center">
+                            <span className="absolute inset-0 flex items-center justify-center bg-background/50">
                               <span className="w-full h-0.5 bg-muted-foreground rotate-45 absolute" />
                             </span>
                           )}
