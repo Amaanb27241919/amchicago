@@ -34,6 +34,7 @@ const collections = [
 const categories = ["Hoodie", "T-Shirt", "Jogger", "Crew", "Bomber Jacket", "Parka", "Long Sleeve", "Zip-Polo"];
 
 type SortOption = "newest" | "price-asc" | "price-desc";
+type AvailabilityFilter = "all" | "in-stock" | "sold-out";
 
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -45,6 +46,7 @@ const Shop = () => {
   const selectedCategories = searchParams.get("category")?.split(",").filter(Boolean) || [];
   const sortBy = (searchParams.get("sort") as SortOption) || "newest";
   const searchQuery = searchParams.get("q") || "";
+  const availability = (searchParams.get("availability") as AvailabilityFilter) || "all";
 
   usePageMeta({
     title: "Shop All Products",
@@ -103,6 +105,16 @@ const Shop = () => {
       });
     }
 
+    // Filter by availability
+    if (availability !== "all") {
+      result = result.filter(product => {
+        const hasAvailableVariant = product.node.variants.edges.some(
+          variant => variant.node.availableForSale
+        );
+        return availability === "in-stock" ? hasAvailableVariant : !hasAvailableVariant;
+      });
+    }
+
     // Sort products
     result.sort((a, b) => {
       const priceA = parseFloat(a.node.priceRange.minVariantPrice.amount);
@@ -120,7 +132,7 @@ const Shop = () => {
     });
 
     return result;
-  }, [allProducts, searchQuery, selectedCollections, selectedCategories, sortBy]);
+  }, [allProducts, searchQuery, selectedCollections, selectedCategories, availability, sortBy]);
 
   const handleSearchChange = (query: string) => {
     const params = new URLSearchParams(searchParams);
@@ -155,6 +167,16 @@ const Shop = () => {
   const handleSortChange = (sort: SortOption) => {
     const params = new URLSearchParams(searchParams);
     params.set("sort", sort);
+    setSearchParams(params);
+  };
+
+  const handleAvailabilityChange = (newAvailability: AvailabilityFilter) => {
+    const params = new URLSearchParams(searchParams);
+    if (newAvailability !== "all") {
+      params.set("availability", newAvailability);
+    } else {
+      params.delete("availability");
+    }
     setSearchParams(params);
   };
 
@@ -218,6 +240,8 @@ const Shop = () => {
               categories={categories}
               selectedCategories={selectedCategories}
               onCategoryChange={handleCategoryChange}
+              availability={availability}
+              onAvailabilityChange={handleAvailabilityChange}
               sortBy={sortBy}
               onSortChange={handleSortChange}
               onClearAll={handleClearAll}
