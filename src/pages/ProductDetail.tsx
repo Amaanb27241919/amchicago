@@ -95,47 +95,17 @@ const ProductDetail = () => {
     canonicalPath: `/product/${handle}`,
   });
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (!product) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-display mb-4">Product not found</h1>
-          <Link to="/" className="text-primary hover:underline">
-            Return home
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  const selectedVariant = product.variants.edges[selectedVariantIndex]?.node;
-  const images = product.images.edges;
-
-  // Extract color option
-  const colorOption = product.options.find(
+  // Extract color option (works with null product)
+  const colorOption = product?.options.find(
     (opt) => opt.name.toLowerCase() === "color" || opt.name.toLowerCase() === "colour"
   );
   const colors = colorOption?.values || [];
-
-  // Initialize selected color
-  useEffect(() => {
-    if (colors.length > 0 && !selectedColor) {
-      setSelectedColor(colors[0]);
-    }
-  }, [colors, selectedColor]);
+  const images = product?.images.edges || [];
 
   // Build color to image index map by matching alt text to color names
   const colorImageMap = useMemo(() => {
     const map: Record<string, number> = {};
-    if (!colorOption || colors.length === 0) return map;
+    if (!colorOption || colors.length === 0 || images.length === 0) return map;
 
     colors.forEach((color) => {
       const colorLower = color.toLowerCase();
@@ -160,6 +130,36 @@ const ProductDetail = () => {
 
     return map;
   }, [colorOption, colors, images]);
+
+  // Initialize selected color
+  useEffect(() => {
+    if (colors.length > 0 && !selectedColor) {
+      setSelectedColor(colors[0]);
+    }
+  }, [colors, selectedColor]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-display mb-4">Product not found</h1>
+          <Link to="/" className="text-primary hover:underline">
+            Return home
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const selectedVariant = product.variants.edges[selectedVariantIndex]?.node;
 
   // Update image when color changes
   const handleColorSelect = (color: string) => {
