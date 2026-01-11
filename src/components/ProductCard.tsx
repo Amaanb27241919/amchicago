@@ -57,63 +57,26 @@ export const ProductCard = ({ product, index }: ProductCardProps) => {
   );
   const colors = colorOption?.values || [];
 
-  // Build a map of color -> image URL using multiple matching strategies
+  // Build a map of color -> image URL using variant image data
   const colorImageMap = useMemo(() => {
     const map: Record<string, string> = {};
     
-    if (!colorOption || colors.length === 0 || node.images.edges.length === 0) return map;
+    if (!colorOption || colors.length === 0) return map;
 
-    // Helper to normalize strings for comparison
-    const normalize = (str: string) => str.toLowerCase().replace(/[\s-_]/g, "");
-
-    colors.forEach((color, colorIndex) => {
-      const colorNorm = normalize(color);
-      const colorWords = color.toLowerCase().split(/[\s-_]+/);
-      
-      // Strategy 1: Exact match in alt text or URL
-      let matchingImage = node.images.edges.find((img) => {
-        const altNorm = normalize(img.node.altText || "");
-        const urlNorm = normalize(img.node.url);
-        return altNorm.includes(colorNorm) || urlNorm.includes(colorNorm);
+    colors.forEach((color) => {
+      // Find a variant with this color that has an image
+      const variantWithImage = node.variants.edges.find((v) => {
+        const hasColor = v.node.selectedOptions.some(
+          (o) => (o.name.toLowerCase() === "color" || o.name.toLowerCase() === "colour") && o.value === color
+        );
+        return hasColor && v.node.image?.url;
       });
 
-      // Strategy 2: Match any word from color name
-      if (!matchingImage && colorWords.length > 0) {
-        matchingImage = node.images.edges.find((img) => {
-          const altText = (img.node.altText || "").toLowerCase();
-          const url = img.node.url.toLowerCase();
-          return colorWords.some(word => word.length > 2 && (altText.includes(word) || url.includes(word)));
-        });
-      }
-
-      // Strategy 3: Match by variant - find which image index corresponds to variants with this color
-      if (!matchingImage) {
-        const variantWithColor = node.variants.edges.find((v) =>
-          v.node.selectedOptions.some(
-            (o) => (o.name.toLowerCase() === "color" || o.name.toLowerCase() === "colour") && o.value === color
-          )
-        );
-        if (variantWithColor) {
-          const variantIndex = node.variants.edges.indexOf(variantWithColor);
-          // Use variant index to find corresponding image (many stores order images by variant)
-          if (variantIndex < node.images.edges.length) {
-            matchingImage = node.images.edges[variantIndex];
-          }
-        }
-      }
-
-      // Strategy 4: Fallback to color position index
-      if (!matchingImage && colorIndex < node.images.edges.length) {
-        matchingImage = node.images.edges[colorIndex];
-      }
-
-      // Final fallback: use first image
-      if (!matchingImage && node.images.edges.length > 0) {
-        matchingImage = node.images.edges[0];
-      }
-
-      if (matchingImage) {
-        map[color] = matchingImage.node.url;
+      if (variantWithImage?.node.image?.url) {
+        map[color] = variantWithImage.node.image.url;
+      } else if (node.images.edges.length > 0) {
+        // Fallback to first image if no variant image
+        map[color] = node.images.edges[0].node.url;
       }
     });
 
