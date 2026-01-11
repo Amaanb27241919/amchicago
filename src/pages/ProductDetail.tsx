@@ -102,34 +102,60 @@ const ProductDetail = () => {
   const colors = colorOption?.values || [];
   const images = product?.images.edges || [];
 
-  // Build color to image index map by matching alt text to color names
+  // Build color to image index map using multiple matching strategies
   const colorImageMap = useMemo(() => {
     const map: Record<string, number> = {};
     if (!colorOption || colors.length === 0 || images.length === 0) return map;
 
-    colors.forEach((color) => {
-      const colorLower = color.toLowerCase();
+    // Helper to normalize strings for comparison
+    const normalize = (str: string) => str.toLowerCase().replace(/[\s-_]/g, "");
+
+    colors.forEach((color, colorIndex) => {
+      const colorNorm = normalize(color);
+      const colorWords = color.toLowerCase().split(/[\s-_]+/);
       
-      // Try to find an image where alt text contains the color name
-      const matchingIndex = images.findIndex((img) => {
-        const altText = img.node.altText?.toLowerCase() || "";
-        const url = img.node.url.toLowerCase();
-        return altText.includes(colorLower) || url.includes(colorLower.replace(/\s+/g, "-"));
+      // Strategy 1: Exact match in alt text or URL
+      let matchingIndex = images.findIndex((img) => {
+        const altNorm = normalize(img.node.altText || "");
+        const urlNorm = normalize(img.node.url);
+        return altNorm.includes(colorNorm) || urlNorm.includes(colorNorm);
       });
 
-      if (matchingIndex >= 0) {
-        map[color] = matchingIndex;
-      } else {
-        // Fallback: use index-based matching
-        const colorIndex = colors.indexOf(color);
-        if (colorIndex < images.length) {
-          map[color] = colorIndex;
+      // Strategy 2: Match any word from color name
+      if (matchingIndex < 0 && colorWords.length > 0) {
+        matchingIndex = images.findIndex((img) => {
+          const altText = (img.node.altText || "").toLowerCase();
+          const url = img.node.url.toLowerCase();
+          return colorWords.some(word => word.length > 2 && (altText.includes(word) || url.includes(word)));
+        });
+      }
+
+      // Strategy 3: Match by variant position
+      if (matchingIndex < 0 && product) {
+        const variantWithColor = product.variants.edges.find((v) =>
+          v.node.selectedOptions.some(
+            (o) => (o.name.toLowerCase() === "color" || o.name.toLowerCase() === "colour") && o.value === color
+          )
+        );
+        if (variantWithColor) {
+          const variantIndex = product.variants.edges.indexOf(variantWithColor);
+          if (variantIndex < images.length) {
+            matchingIndex = variantIndex;
+          }
         }
       }
+
+      // Strategy 4: Fallback to color position index
+      if (matchingIndex < 0 && colorIndex < images.length) {
+        matchingIndex = colorIndex;
+      }
+
+      // Store the match (or 0 as final fallback)
+      map[color] = matchingIndex >= 0 ? matchingIndex : 0;
     });
 
     return map;
-  }, [colorOption, colors, images]);
+  }, [colorOption, colors, images, product]);
 
   // Initialize selected color
   useEffect(() => {
