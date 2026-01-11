@@ -95,6 +95,11 @@ export const ProductCard = ({ product, index }: ProductCardProps) => {
   const firstVariant = node.variants.edges[0]?.node;
   const price = node.priceRange.minVariantPrice;
 
+  // Check if all variants are sold out
+  const isSoldOut = node.variants.edges.every(
+    (variant) => !variant.node.availableForSale
+  );
+
   // Find variant matching selected color
   const selectedVariant = useMemo(() => {
     if (!selectedColor) return firstVariant;
@@ -162,35 +167,49 @@ export const ProductCard = ({ product, index }: ProductCardProps) => {
             <img
               src={displayImage}
               alt={node.title}
-              className="absolute inset-0 w-full h-full object-cover transition-all duration-300"
+              className={cn(
+                "absolute inset-0 w-full h-full object-cover transition-all duration-300",
+                isSoldOut && "opacity-70"
+              )}
             />
+          )}
+
+          {/* Sold Out Badge */}
+          {isSoldOut && (
+            <div className="absolute top-3 left-3 z-10">
+              <span className="bg-destructive text-destructive-foreground text-xs font-semibold px-2.5 py-1 rounded-md uppercase tracking-wide">
+                Sold Out
+              </span>
+            </div>
           )}
 
           {/* Overlay gradient */}
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
           {/* Quick actions */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            whileHover={{ y: 0, opacity: 1 }}
-            className="absolute bottom-4 left-4 right-4 flex gap-2 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300"
-          >
-            <Button
-              size="sm"
-              className="flex-1 gradient-brand text-primary-foreground font-medium"
-              onClick={handleAddToCart}
+          {!isSoldOut && (
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              whileHover={{ y: 0, opacity: 1 }}
+              className="absolute bottom-4 left-4 right-4 flex gap-2 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300"
             >
-              <ShoppingBag className="w-4 h-4 mr-2" />
-              Add to Bag
-            </Button>
-            <Button
-              size="sm"
-              variant="secondary"
-              className="bg-card/90 hover:bg-card"
-            >
-              <Eye className="w-4 h-4" />
-            </Button>
-          </motion.div>
+              <Button
+                size="sm"
+                className="flex-1 gradient-brand text-primary-foreground font-medium"
+                onClick={handleAddToCart}
+              >
+                <ShoppingBag className="w-4 h-4 mr-2" />
+                Add to Bag
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                className="bg-card/90 hover:bg-card"
+              >
+                <Eye className="w-4 h-4" />
+              </Button>
+            </motion.div>
+          )}
 
           {/* Hover shine effect */}
           <div className="absolute inset-0 hover-shine pointer-events-none" />
