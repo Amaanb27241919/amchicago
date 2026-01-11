@@ -57,31 +57,35 @@ export const ProductCard = ({ product, index }: ProductCardProps) => {
   );
   const colors = colorOption?.values || [];
 
-  // Build a map of color -> image URL by finding variants with that color
+  // Build a map of color -> image URL by matching image alt text to color names
   const colorImageMap = useMemo(() => {
     const map: Record<string, string> = {};
     
-    if (!colorOption) return map;
+    if (!colorOption || colors.length === 0) return map;
 
-    // Group variants by color and find associated images
-    node.variants.edges.forEach((variantEdge, variantIndex) => {
-      const variant = variantEdge.node;
-      const colorOpt = variant.selectedOptions.find(
-        (opt) => opt.name.toLowerCase() === "color" || opt.name.toLowerCase() === "colour"
-      );
+    colors.forEach((color) => {
+      const colorLower = color.toLowerCase();
       
-      if (colorOpt && !map[colorOpt.value]) {
-        // Use the corresponding image index if available
-        const imageIndex = colors.indexOf(colorOpt.value);
-        const image = node.images.edges[imageIndex]?.node || node.images.edges[0]?.node;
-        if (image) {
-          map[colorOpt.value] = image.url;
+      // Try to find an image where alt text contains the color name
+      const matchingImage = node.images.edges.find((img) => {
+        const altText = img.node.altText?.toLowerCase() || "";
+        const url = img.node.url.toLowerCase();
+        return altText.includes(colorLower) || url.includes(colorLower.replace(/\s+/g, "-"));
+      });
+
+      if (matchingImage) {
+        map[color] = matchingImage.node.url;
+      } else {
+        // Fallback: use index-based matching
+        const colorIndex = colors.indexOf(color);
+        if (colorIndex < node.images.edges.length) {
+          map[color] = node.images.edges[colorIndex].node.url;
         }
       }
     });
 
     return map;
-  }, [node.variants.edges, node.images.edges, colorOption, colors]);
+  }, [node.images.edges, colorOption, colors]);
 
   const [selectedColor, setSelectedColor] = useState<string | null>(
     colors.length > 0 ? colors[0] : null

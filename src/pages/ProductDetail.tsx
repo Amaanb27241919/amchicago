@@ -132,20 +132,34 @@ const ProductDetail = () => {
     }
   }, [colors, selectedColor]);
 
-  // Build color to image index map
+  // Build color to image index map by matching alt text to color names
   const colorImageMap = useMemo(() => {
     const map: Record<string, number> = {};
-    if (!colorOption) return map;
+    if (!colorOption || colors.length === 0) return map;
 
-    colors.forEach((color, index) => {
-      // Try to match color to image by index
-      if (index < images.length) {
-        map[color] = index;
+    colors.forEach((color) => {
+      const colorLower = color.toLowerCase();
+      
+      // Try to find an image where alt text contains the color name
+      const matchingIndex = images.findIndex((img) => {
+        const altText = img.node.altText?.toLowerCase() || "";
+        const url = img.node.url.toLowerCase();
+        return altText.includes(colorLower) || url.includes(colorLower.replace(/\s+/g, "-"));
+      });
+
+      if (matchingIndex >= 0) {
+        map[color] = matchingIndex;
+      } else {
+        // Fallback: use index-based matching
+        const colorIndex = colors.indexOf(color);
+        if (colorIndex < images.length) {
+          map[color] = colorIndex;
+        }
       }
     });
 
     return map;
-  }, [colorOption, colors, images.length]);
+  }, [colorOption, colors, images]);
 
   // Update image when color changes
   const handleColorSelect = (color: string) => {
