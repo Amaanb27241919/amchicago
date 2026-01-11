@@ -15,11 +15,13 @@ interface ProductCardProps {
 
 // Map color names to CSS colors
 const colorMap: Record<string, string> = {
+  // Basic colors
   black: "#000000",
   white: "#FFFFFF",
   red: "#DC2626",
   blue: "#2563EB",
   navy: "#1E3A5F",
+  "navy blue": "#1E3A5F",
   green: "#16A34A",
   gray: "#6B7280",
   grey: "#6B7280",
@@ -37,14 +39,110 @@ const colorMap: Record<string, string> = {
   gold: "#D4AF37",
   silver: "#C0C0C0",
   charcoal: "#36454F",
+  // Heather variants
   heather: "#9CA3AF",
   "heather gray": "#9CA3AF",
   "heather grey": "#9CA3AF",
+  "athletic heather": "#B8C0CC",
+  "dark heather": "#4B5563",
+  "dark grey heather": "#4B5563",
+  // Extended colors
+  sand: "#C2B280",
+  khaki: "#C3B091",
+  natural: "#F5F5DC",
+  ivory: "#FFFFF0",
+  oatmeal: "#D8C4A8",
+  bone: "#E3DAC9",
+  stone: "#928E85",
+  slate: "#708090",
+  "slate gray": "#708090",
+  midnight: "#191970",
+  "midnight blue": "#191970",
+  forest: "#228B22",
+  "forest green": "#228B22",
+  sage: "#BCB88A",
+  mint: "#98FB98",
+  teal: "#008080",
+  aqua: "#00FFFF",
+  cyan: "#00FFFF",
+  turquoise: "#40E0D0",
+  coral: "#FF7F50",
+  salmon: "#FA8072",
+  peach: "#FFCBA4",
+  rose: "#FF007F",
+  "dusty rose": "#DCAE96",
+  blush: "#DE5D83",
+  mauve: "#E0B0FF",
+  lavender: "#E6E6FA",
+  lilac: "#C8A2C8",
+  violet: "#8B00FF",
+  plum: "#8E4585",
+  indigo: "#4B0082",
+  royal: "#4169E1",
+  "royal blue": "#4169E1",
+  sky: "#87CEEB",
+  "sky blue": "#87CEEB",
+  "light blue": "#ADD8E6",
+  "baby blue": "#89CFF0",
+  denim: "#1560BD",
+  cobalt: "#0047AB",
+  wine: "#722F37",
+  rust: "#B7410E",
+  copper: "#B87333",
+  camel: "#C19A6B",
+  chocolate: "#7B3F00",
+  coffee: "#6F4E37",
+  espresso: "#3C2415",
+  mocha: "#967969",
+  taupe: "#483C32",
+  mushroom: "#A9A9A9",
+  ash: "#B2BEB5",
+  graphite: "#383838",
+  onyx: "#353839",
+  jet: "#343434",
+  carbon: "#1C1C1C",
+  "off white": "#FAF9F6",
+  "off-white": "#FAF9F6",
+  pearl: "#FDEEF4",
+  snow: "#FFFAFA",
+  chalk: "#EFEBE9",
+  lemon: "#FFF44F",
+  lime: "#32CD32",
+  apple: "#8DB600",
+  emerald: "#50C878",
+  jade: "#00A86B",
+  hunter: "#355E3B",
+  "hunter green": "#355E3B",
+  army: "#4B5320",
+  "army green": "#4B5320",
+  camo: "#78866B",
+  camouflage: "#78866B",
+  military: "#5E6952",
+  seafoam: "#71EEB8",
+  "sea foam": "#71EEB8",
+  ocean: "#006994",
+  marine: "#042E60",
+  pacific: "#1CA9C9",
+  atlantic: "#004C91",
 };
 
 const getColorValue = (colorName: string): string => {
   const normalized = colorName.toLowerCase().trim();
-  return colorMap[normalized] || "#9CA3AF";
+  
+  // Direct match
+  if (colorMap[normalized]) {
+    return colorMap[normalized];
+  }
+  
+  // Check if any key is contained in the color name
+  for (const [key, value] of Object.entries(colorMap)) {
+    if (normalized.includes(key) || key.includes(normalized)) {
+      return value;
+    }
+  }
+  
+  // Default fallback
+  return "#9CA3AF";
 };
 
 export const ProductCard = ({ product, index }: ProductCardProps) => {
