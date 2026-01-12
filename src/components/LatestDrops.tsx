@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ShopifyProduct, fetchProducts } from "@/lib/shopify";
 import { ProductCard } from "./ProductCard";
-import { Loader2, ArrowRight } from "lucide-react";
+import { ProductGridSkeleton } from "./ProductCardSkeleton";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 import { logError } from "@/lib/logger";
@@ -31,9 +32,21 @@ export const LatestDrops = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
+      <section id="shop" className="py-20 sm:py-32">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="text-center mb-12 sm:mb-16">
+            <span className="text-sm tracking-[0.3em] uppercase text-primary mb-2 block">
+              New Arrivals
+            </span>
+            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-semibold">
+              Latest Drops
+            </h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+            <ProductGridSkeleton count={4} />
+          </div>
+        </div>
+      </section>
     );
   }
 
