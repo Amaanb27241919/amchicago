@@ -22,9 +22,6 @@ const contactSchema = z.object({
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
-const RATE_LIMIT_KEY = 'contact_last_submit';
-const RATE_LIMIT_MINUTES = 2;
-
 const Contact = () => {
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
@@ -66,27 +63,33 @@ const Contact = () => {
       return;
     }
 
-    // Rate limiting
-    const lastSubmit = localStorage.getItem(RATE_LIMIT_KEY);
-    if (lastSubmit && Date.now() - parseInt(lastSubmit) < RATE_LIMIT_MINUTES * 60000) {
-      toast.error("Please wait a few minutes before sending another message");
-      return;
-    }
-
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from("contact_inquiries").insert({
-        name: result.data.name,
-        email: result.data.email,
-        subject: result.data.subject || null,
-        message: result.data.message,
+      const response = await supabase.functions.invoke("submit-contact", {
+        body: {
+          name: result.data.name,
+          email: result.data.email,
+          subject: result.data.subject || null,
+          message: result.data.message,
+        },
       });
 
-      if (error) throw error;
+      if (response.error) {
+        throw new Error(response.error.message || "Failed to send message");
+      }
 
-      localStorage.setItem(RATE_LIMIT_KEY, Date.now().toString());
-      toast.success("Message sent! We'll get back to you soon.");
-      setFormData({ name: "", email: "", subject: "", message: "" });
+      const data = response.data;
+
+      if (data?.error) {
+        if (data.error.includes("Too many requests")) {
+          toast.error("Please wait a few minutes before sending another message");
+        } else {
+          throw new Error(data.error);
+        }
+      } else {
+        toast.success("Message sent! We'll get back to you soon.");
+        setFormData({ name: "", email: "", subject: "", message: "" });
+      }
     } catch (error) {
       logError("Contact form error:", error);
       toast.error("Something went wrong. Please try again.");

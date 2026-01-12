@@ -11,10 +11,6 @@ import { motion } from "framer-motion";
 // Email validation regex - checks for proper format with TLD
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Rate limiting constants
-const RATE_LIMIT_KEY = 'newsletter_last_submit';
-const RATE_LIMIT_MINUTES = 5;
-
 export const Footer = () => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,28 +25,25 @@ export const Footer = () => {
       return;
     }
 
-    // Client-side rate limiting to prevent spam
-    const lastSubmit = localStorage.getItem(RATE_LIMIT_KEY);
-    if (lastSubmit && Date.now() - parseInt(lastSubmit) < RATE_LIMIT_MINUTES * 60000) {
-      toast.error("Please wait a few minutes before subscribing again");
-      return;
-    }
-
     setIsSubmitting(true);
     try {
-      const { error } = await supabase
-        .from("newsletter_subscribers")
-        .insert({ email: trimmedEmail });
+      const response = await supabase.functions.invoke("submit-newsletter", {
+        body: { email: trimmedEmail },
+      });
 
-      if (error) {
-        if (error.code === "23505") {
+      if (response.error) {
+        throw new Error(response.error.message || "Subscription failed");
+      }
+
+      const data = response.data;
+
+      if (data?.error) {
+        if (data.code === "DUPLICATE") {
           toast.info("You're already subscribed!");
         } else {
-          throw error;
+          throw new Error(data.error);
         }
       } else {
-        // Store timestamp for rate limiting
-        localStorage.setItem(RATE_LIMIT_KEY, Date.now().toString());
         toast.success("Thanks for subscribing! 🎉");
         setEmail("");
       }
