@@ -18,10 +18,12 @@ import ThankYou from "./pages/ThankYou";
 import NotFound from "./pages/NotFound";
 import PreOrders from "./pages/admin/PreOrders";
 import AdminLogin from "./pages/admin/Login";
+import ComingSoon from "./pages/ComingSoon";
 
 const queryClient = new QueryClient();
 
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || "";
+const SITE_LOCKED = import.meta.env.VITE_SITE_LOCKED === "true";
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -30,22 +32,30 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/product/:handle" element={<ProductDetail />} />
-          <Route path="/size-guide" element={<SizeGuide />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/shipping" element={<Shipping />} />
-          <Route path="/returns" element={<Returns />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/thank-you" element={<ThankYou />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/preorders" element={<PreOrders />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        {SITE_LOCKED ? (
+          <Routes>
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/preorders" element={<PreOrders />} />
+            <Route path="*" element={<ComingSoon />} />
+          </Routes>
+        ) : (
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/shop" element={<Shop />} />
+            <Route path="/product/:handle" element={<ProductDetail />} />
+            <Route path="/size-guide" element={<SizeGuide />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/shipping" element={<Shipping />} />
+            <Route path="/returns" element={<Returns />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/thank-you" element={<ThankYou />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/preorders" element={<PreOrders />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        )}
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
