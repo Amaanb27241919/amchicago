@@ -59,6 +59,28 @@ export const PreOrderForm = ({
 
       if (error) throw error;
 
+      // Send confirmation email
+      try {
+        await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-preorder-confirmation`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email,
+              name: name || undefined,
+              productTitle,
+              variantTitle,
+              quantity,
+              price,
+            }),
+          }
+        );
+      } catch (emailError) {
+        // Don't fail the pre-order if email fails
+        console.error("Email notification failed:", emailError);
+      }
+
       setIsSubmitted(true);
       toast.success("Pre-order submitted successfully!");
     } catch (error) {

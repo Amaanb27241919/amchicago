@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { PreOrderStats } from "@/components/admin/PreOrderStats";
 import { PreOrderTable } from "@/components/admin/PreOrderTable";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Download, Search, Loader2, Lock } from "lucide-react";
+import { ArrowLeft, Download, Search, Loader2, LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { usePageMeta } from "@/hooks/usePageMeta";
 
@@ -34,8 +35,6 @@ interface PreOrder {
   notes: string | null;
 }
 
-const ADMIN_PASSWORD = "aspire2025"; // Simple password protection
-
 const PreOrders = () => {
   usePageMeta({
     title: "Pre-Orders Dashboard | Aspire Manifest",
@@ -43,34 +42,31 @@ const PreOrders = () => {
   });
 
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState("");
+  const { isAdmin, isLoading: isAuthLoading, signOut } = useAdminAuth();
   const [preorders, setPreorders] = useState<PreOrder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
-  // Check session storage for authentication
   useEffect(() => {
-    const isAuth = sessionStorage.getItem("admin_authenticated") === "true";
-    setIsAuthenticated(isAuth);
-    if (isAuth) {
+    if (isAdmin) {
       fetchPreorders();
-    } else {
-      setIsLoading(false);
     }
-  }, []);
+  }, [isAdmin]);
 
   const fetchPreorders = async () => {
     setIsLoading(true);
     try {
-      // Using service role key via edge function for admin access
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
+
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-preorders`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${session.access_token}`,
           },
         }
       );
@@ -89,25 +85,18 @@ const PreOrders = () => {
     }
   };
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
-      sessionStorage.setItem("admin_authenticated", "true");
-      setIsAuthenticated(true);
-      fetchPreorders();
-    } else {
-      toast.error("Invalid password");
-    }
-  };
-
   const handleUpdateStatus = async (id: string, status: PreorderStatus) => {
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
+
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-preorders`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({ id, status }),
         }
@@ -127,12 +116,16 @@ const PreOrders = () => {
 
   const handleUpdateNotes = async (id: string, notes: string) => {
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
+
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-preorders`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({ id, notes }),
         }
@@ -229,40 +222,10 @@ const PreOrders = () => {
     return { totalPreorders, potentialRevenue, pendingCount, topProducts };
   }, [preorders]);
 
-  if (!isAuthenticated) {
+  if (isAuthLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="w-full max-w-sm">
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-8 h-8 text-primary" />
-            </div>
-            <h1 className="text-2xl font-bold text-foreground">Admin Access</h1>
-            <p className="text-muted-foreground mt-2">
-              Enter password to view pre-orders
-            </p>
-          </div>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <Input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="h-12"
-            />
-            <Button type="submit" className="w-full h-12">
-              Access Dashboard
-            </Button>
-          </form>
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/")}
-            className="w-full mt-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Store
-          </Button>
-        </div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -283,10 +246,15 @@ const PreOrders = () => {
               </p>
             </div>
           </div>
-          <Button onClick={handleExportCSV} variant="outline">
-            <Download className="w-4 h-4 mr-2" />
-            Export CSV
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={handleExportCSV} variant="outline">
+              <Download className="w-4 h-4 mr-2" />
+              Export CSV
+            </Button>
+            <Button onClick={signOut} variant="ghost" size="icon">
+              <LogOut className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
 
         {isLoading ? (
