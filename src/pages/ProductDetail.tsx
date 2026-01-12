@@ -9,6 +9,7 @@ import { Header } from "@/components/Header";
 import { CartDrawer } from "@/components/CartDrawer";
 import { RelatedProducts } from "@/components/RelatedProducts";
 import { RecentlyViewed } from "@/components/RecentlyViewed";
+import { AIRecommendations } from "@/components/AIRecommendations";
 import { TrustBadges } from "@/components/TrustBadges";
 import { BackInStockNotification } from "@/components/BackInStockNotification";
 import { PreOrderForm } from "@/components/PreOrderForm";
@@ -477,6 +478,9 @@ const ProductDetail = () => {
               <TrustBadges />
             </motion.div>
           </div>
+
+          {/* AI Recommendations */}
+          <AIRecommendations currentHandle={handle} />
 
           {/* Related Products */}
           <RelatedProducts currentHandle={handle || ""} currentTitle={product.title} />
