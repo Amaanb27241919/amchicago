@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import chicagoSkyline from "@/assets/chicago-skyline.png";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -55,8 +56,8 @@ export const About = () => {
               className="aspect-[4/5] rounded-xl overflow-hidden"
             >
               <img
-                src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&auto=format&fit=crop&q=80"
-                alt="A|M Chicago"
+                src={chicagoSkyline}
+                alt="Chicago skyline at sunset"
                 className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
               />
             </motion.div>
