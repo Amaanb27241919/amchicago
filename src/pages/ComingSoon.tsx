@@ -153,7 +153,7 @@ const ComingSoon = ({ onBypass }: ComingSoonProps) => {
         style={{ animationDelay: "1s" }}
       />
 
-      <div className="relative z-10 text-center px-4 max-w-2xl mx-auto">
+      <div className="relative z-10 text-center px-4 pb-16 max-w-2xl mx-auto">
         {/* Logo */}
         <motion.div
           variants={floatingAnimation}
@@ -221,7 +221,7 @@ const ComingSoon = ({ onBypass }: ComingSoonProps) => {
           </motion.p>
 
           {/* Employee access section */}
-          <motion.div variants={childVariants} className="mt-12 pt-8 border-t border-border/30">
+          <motion.div variants={childVariants} className="mt-8 pt-6 border-t border-border/30">
             {!showPasswordInput ? (
               <button
                 onClick={() => setShowPasswordInput(true)}
@@ -258,9 +258,9 @@ const ComingSoon = ({ onBypass }: ComingSoonProps) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5, duration: 1 }}
-        className="absolute bottom-8 left-0 right-0 text-center"
+        className="absolute bottom-4 left-0 right-0 text-center"
       >
-        <p className="text-sm text-muted-foreground/50">
+        <p className="text-xs text-muted-foreground/40">
           Aspire | Manifest · Chicago, IL
         </p>
       </motion.div>
