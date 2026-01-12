@@ -1,7 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,26 +10,13 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-// Validation schema
-const PreOrderEmailSchema = z.object({
-  email: z.string().email("Invalid email address").max(255),
-  name: z.string().max(100).optional(),
-  productTitle: z.string().min(1).max(200),
-  variantTitle: z.string().min(1).max(200),
-  quantity: z.number().int().positive().max(999),
-  price: z.string().max(50),
-});
-
-// Helper function to escape HTML
-function escapeHtml(text: string): string {
-  const map: Record<string, string> = {
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#039;",
-  };
-  return text.replace(/[&<>"']/g, (m) => map[m]);
+interface PreOrderEmailRequest {
+  email: string;
+  name?: string;
+  productTitle: string;
+  variantTitle: string;
+  quantity: number;
+  price: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -38,30 +26,9 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const body = await req.json();
+    const { email, name, productTitle, variantTitle, quantity, price }: PreOrderEmailRequest = await req.json();
 
-    // Validate input
-    const result = PreOrderEmailSchema.safeParse(body);
-    if (!result.success) {
-      return new Response(
-        JSON.stringify({
-          error: "Invalid input",
-          details: result.error.format(),
-        }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
-    }
-
-    const { email, name, productTitle, variantTitle, quantity, price } =
-      result.data;
-
-    const customerName = escapeHtml(name || "Valued Customer");
-    const safeProductTitle = escapeHtml(productTitle);
-    const safeVariantTitle = escapeHtml(variantTitle);
-    const safePrice = escapeHtml(price);
+    const customerName = name || "Valued Customer";
 
     const htmlContent = `
       <!DOCTYPE html>
@@ -99,9 +66,9 @@ const handler = async (req: Request): Promise<Response> => {
                     <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9f9f9; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
                       <tr>
                         <td style="padding: 20px;">
-                          <p style="margin: 0 0 8px; color: #000000; font-size: 16px; font-weight: 600;">${safeProductTitle}</p>
-                          <p style="margin: 0 0 8px; color: #666666; font-size: 14px;">${safeVariantTitle}</p>
-                          <p style="margin: 0; color: #666666; font-size: 14px;">Quantity: ${quantity} • ${safePrice}</p>
+                          <p style="margin: 0 0 8px; color: #000000; font-size: 16px; font-weight: 600;">${productTitle}</p>
+                          <p style="margin: 0 0 8px; color: #666666; font-size: 14px;">${variantTitle}</p>
+                          <p style="margin: 0; color: #666666; font-size: 14px;">Quantity: ${quantity} • ${price}</p>
                         </td>
                       </tr>
                     </table>
@@ -144,7 +111,7 @@ const handler = async (req: Request): Promise<Response> => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
+        "Authorization": `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
         from: "Aspire Manifest <noreply@aspiremanifest.com>",
@@ -169,10 +136,10 @@ const handler = async (req: Request): Promise<Response> => {
         ...corsHeaders,
       },
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Error sending pre-order confirmation email:", error);
     return new Response(
-      JSON.stringify({ error: "Failed to send confirmation email" }),
+      JSON.stringify({ error: error.message }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },

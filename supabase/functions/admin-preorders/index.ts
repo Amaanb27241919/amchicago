@@ -1,17 +1,9 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
-
-// Validation schemas
-const UpdatePreorderSchema = z.object({
-  id: z.string().uuid("Invalid preorder ID"),
-  status: z.enum(["pending", "contacted", "converted", "cancelled"]).optional(),
-  notes: z.string().max(1000, "Notes must be less than 1000 characters").optional(),
-});
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -77,24 +69,14 @@ Deno.serve(async (req) => {
     }
 
     if (req.method === "PATCH") {
-      const body = await req.json();
+      const { id, status, notes } = await req.json();
 
-      // Validate input with zod
-      const result = UpdatePreorderSchema.safeParse(body);
-      if (!result.success) {
-        return new Response(
-          JSON.stringify({
-            error: "Invalid input",
-            details: result.error.format(),
-          }),
-          {
-            status: 400,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
+      if (!id) {
+        return new Response(JSON.stringify({ error: "Missing id" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
-
-      const { id, status, notes } = result.data;
 
       const updateData: Record<string, unknown> = {};
       if (status !== undefined) updateData.status = status;
@@ -120,7 +102,8 @@ Deno.serve(async (req) => {
     });
   } catch (error) {
     console.error("Error:", error);
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
