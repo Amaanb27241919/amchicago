@@ -65,6 +65,57 @@ export type Database = {
         }
         Relationships: []
       }
+      preorders: {
+        Row: {
+          created_at: string
+          email: string
+          fulfilled_at: string | null
+          id: string
+          name: string | null
+          notes: string | null
+          phone: string | null
+          price_at_order: number | null
+          product_handle: string
+          product_title: string
+          quantity: number
+          status: Database["public"]["Enums"]["preorder_status"]
+          variant_id: string
+          variant_title: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          fulfilled_at?: string | null
+          id?: string
+          name?: string | null
+          notes?: string | null
+          phone?: string | null
+          price_at_order?: number | null
+          product_handle: string
+          product_title: string
+          quantity?: number
+          status?: Database["public"]["Enums"]["preorder_status"]
+          variant_id: string
+          variant_title: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          fulfilled_at?: string | null
+          id?: string
+          name?: string | null
+          notes?: string | null
+          phone?: string | null
+          price_at_order?: number | null
+          product_handle?: string
+          product_title?: string
+          quantity?: number
+          status?: Database["public"]["Enums"]["preorder_status"]
+          variant_id?: string
+          variant_title?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -73,7 +124,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      preorder_status: "pending" | "contacted" | "converted" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -200,6 +251,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      preorder_status: ["pending", "contacted", "converted", "cancelled"],
+    },
   },
 } as const

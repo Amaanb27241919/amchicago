@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Minus, Plus, ShoppingBag, Loader2, Heart } from "lucide-react";
+import { ArrowLeft, Minus, Plus, ShoppingBag, Loader2, Heart, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { fetchProductByHandle, formatPrice, ShopifyProduct } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cartStore";
@@ -11,6 +11,7 @@ import { RelatedProducts } from "@/components/RelatedProducts";
 import { RecentlyViewed } from "@/components/RecentlyViewed";
 import { TrustBadges } from "@/components/TrustBadges";
 import { BackInStockNotification } from "@/components/BackInStockNotification";
+import { PreOrderForm } from "@/components/PreOrderForm";
 import { toast } from "sonner";
 import { logError } from "@/lib/logger";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -60,6 +61,7 @@ const ProductDetail = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [showPreOrderForm, setShowPreOrderForm] = useState(false);
   const { addItem, setOpen } = useCartStore();
   const { addProduct: addToRecentlyViewed } = useRecentlyViewed();
   const { isInWishlist, toggleWishlist } = useWishlist();
@@ -412,17 +414,28 @@ const ProductDetail = () => {
                 </div>
               </div>
 
-              {/* Add to cart */}
+              {/* Add to cart or Pre-order */}
               <div className="flex gap-3">
-                <Button
-                  size="lg"
-                  className="flex-1 gradient-brand text-primary-foreground font-semibold glow-brand"
-                  onClick={handleAddToCart}
-                  disabled={!selectedVariant?.availableForSale}
-                >
-                  <ShoppingBag className="w-5 h-5 mr-2" />
-                  {selectedVariant?.availableForSale ? "Add to Bag" : "Sold Out"}
-                </Button>
+                {selectedVariant?.availableForSale ? (
+                  <Button
+                    size="lg"
+                    className="flex-1 gradient-brand text-primary-foreground font-semibold glow-brand"
+                    onClick={handleAddToCart}
+                  >
+                    <ShoppingBag className="w-5 h-5 mr-2" />
+                    Add to Bag
+                  </Button>
+                ) : (
+                  <Button
+                    size="lg"
+                    className="flex-1"
+                    variant="outline"
+                    onClick={() => setShowPreOrderForm(true)}
+                  >
+                    <Bell className="w-5 h-5 mr-2" />
+                    Pre-Order
+                  </Button>
+                )}
                 <Button
                   size="lg"
                   variant="outline"
@@ -437,6 +450,19 @@ const ProductDetail = () => {
                   <Heart className={`w-5 h-5 ${isInWishlist(handle || "") ? "fill-current" : ""}`} />
                 </Button>
               </div>
+
+              {/* Pre-order form modal */}
+              {showPreOrderForm && selectedVariant && (
+                <PreOrderForm
+                  productHandle={product.handle}
+                  productTitle={product.title}
+                  variantId={selectedVariant.id}
+                  variantTitle={selectedVariant.title}
+                  price={formatPrice(selectedVariant.price.amount, selectedVariant.price.currencyCode)}
+                  quantity={quantity}
+                  onClose={() => setShowPreOrderForm(false)}
+                />
+              )}
 
               {/* Back in stock notification for sold out items */}
               {!selectedVariant?.availableForSale && (
