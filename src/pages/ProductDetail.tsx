@@ -9,6 +9,8 @@ import { Header } from "@/components/Header";
 import { CartDrawer } from "@/components/CartDrawer";
 import { RelatedProducts } from "@/components/RelatedProducts";
 import { RecentlyViewed } from "@/components/RecentlyViewed";
+import { TrustBadges } from "@/components/TrustBadges";
+import { BackInStockNotification } from "@/components/BackInStockNotification";
 import { toast } from "sonner";
 import { logError } from "@/lib/logger";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -435,6 +437,18 @@ const ProductDetail = () => {
                   <Heart className={`w-5 h-5 ${isInWishlist(handle || "") ? "fill-current" : ""}`} />
                 </Button>
               </div>
+
+              {/* Back in stock notification for sold out items */}
+              {!selectedVariant?.availableForSale && (
+                <BackInStockNotification
+                  productTitle={product.title}
+                  productHandle={product.handle}
+                  variantTitle={selectedVariant?.title !== "Default Title" ? selectedVariant?.title : undefined}
+                />
+              )}
+
+              {/* Trust badges */}
+              <TrustBadges />
             </motion.div>
           </div>
 
