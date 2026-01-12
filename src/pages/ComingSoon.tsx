@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Lock } from "lucide-react";
 import aspireLogo from "@/assets/aspire-manifest-logo.png";
+
+const EMPLOYEE_PASSWORD = "amthreads101";
+const BYPASS_KEY = "am_employee_access";
 
 const floatingAnimation = {
   initial: { y: 0 },
@@ -50,8 +54,14 @@ const glowPulse = {
   },
 };
 
-const ComingSoon = () => {
+interface ComingSoonProps {
+  onBypass?: () => void;
+}
+
+const ComingSoon = ({ onBypass }: ComingSoonProps) => {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -99,6 +109,26 @@ const ComingSoon = () => {
       });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (password === EMPLOYEE_PASSWORD) {
+      sessionStorage.setItem(BYPASS_KEY, "true");
+      toast({
+        title: "Access granted",
+        description: "Welcome! You can now preview the site.",
+      });
+      onBypass?.();
+    } else {
+      toast({
+        title: "Incorrect password",
+        description: "Please try again.",
+        variant: "destructive",
+      });
+      setPassword("");
     }
   };
 
@@ -189,6 +219,37 @@ const ComingSoon = () => {
           >
             No spam, just launch updates. Unsubscribe anytime.
           </motion.p>
+
+          {/* Employee access section */}
+          <motion.div variants={childVariants} className="mt-12 pt-8 border-t border-border/30">
+            {!showPasswordInput ? (
+              <button
+                onClick={() => setShowPasswordInput(true)}
+                className="inline-flex items-center gap-2 text-sm text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+              >
+                <Lock className="w-4 h-4" />
+                Employee Access
+              </button>
+            ) : (
+              <form onSubmit={handlePasswordSubmit} className="flex flex-col sm:flex-row gap-3 max-w-sm mx-auto">
+                <Input
+                  type="password"
+                  placeholder="Enter employee password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="flex-1 bg-card/50 border-border/50 backdrop-blur-sm h-10 text-sm"
+                  autoFocus
+                />
+                <Button
+                  type="submit"
+                  variant="outline"
+                  className="h-10 px-6 text-sm"
+                >
+                  Enter
+                </Button>
+              </form>
+            )}
+          </motion.div>
         </motion.div>
       </div>
 
