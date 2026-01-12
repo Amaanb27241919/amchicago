@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,42 +24,59 @@ import ComingSoon from "./pages/ComingSoon";
 const queryClient = new QueryClient();
 
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || "";
-const SITE_LOCKED = import.meta.env.VITE_SITE_LOCKED === "true";
+const SITE_LOCKED = true; // Site is locked until launch
+const BYPASS_KEY = "am_employee_access";
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      {GA_MEASUREMENT_ID && <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />}
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        {SITE_LOCKED ? (
-          <Routes>
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin/preorders" element={<PreOrders />} />
-            <Route path="*" element={<ComingSoon />} />
-          </Routes>
-        ) : (
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/product/:handle" element={<ProductDetail />} />
-            <Route path="/size-guide" element={<SizeGuide />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/shipping" element={<Shipping />} />
-            <Route path="/returns" element={<Returns />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/thank-you" element={<ThankYou />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin/preorders" element={<PreOrders />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        )}
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  const [hasAccess, setHasAccess] = useState(false);
+
+  useEffect(() => {
+    // Check if employee has already bypassed the lock
+    const bypassed = sessionStorage.getItem(BYPASS_KEY) === "true";
+    setHasAccess(bypassed);
+  }, []);
+
+  const handleBypass = () => {
+    setHasAccess(true);
+  };
+
+  const showComingSoon = SITE_LOCKED && !hasAccess;
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        {GA_MEASUREMENT_ID && <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />}
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          {showComingSoon ? (
+            <Routes>
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin/preorders" element={<PreOrders />} />
+              <Route path="*" element={<ComingSoon onBypass={handleBypass} />} />
+            </Routes>
+          ) : (
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/product/:handle" element={<ProductDetail />} />
+              <Route path="/size-guide" element={<SizeGuide />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/shipping" element={<Shipping />} />
+              <Route path="/returns" element={<Returns />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/thank-you" element={<ThankYou />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin/preorders" element={<PreOrders />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          )}
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
