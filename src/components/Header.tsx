@@ -1,4 +1,4 @@
-import { ShoppingBag, Menu, X, Instagram } from "lucide-react";
+import { ShoppingBag, Menu, X, Instagram, ChevronDown } from "lucide-react";
 import { Linkedin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/stores/cartStore";
@@ -6,9 +6,23 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { HeaderSearch } from "@/components/HeaderSearch";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const collectionLinks = [
+  { name: "Founders Series", slug: "founders-series" },
+  { name: "Hope V1", slug: "hope-v1" },
+  { name: "A | M Essentials", slug: "am-essentials" },
+];
+
 export const Header = () => {
   const { getTotalItems, setOpen } = useCartStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [collectionsOpen, setCollectionsOpen] = useState(false);
   const totalItems = getTotalItems();
   const location = useLocation();
   const navigate = useNavigate();
@@ -64,6 +78,24 @@ export const Header = () => {
             >
               Shop
             </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors outline-none">
+                Collections
+                <ChevronDown className="h-3.5 w-3.5" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                {collectionLinks.map((collection) => (
+                  <DropdownMenuItem key={collection.slug} asChild>
+                    <Link
+                      to={`/collections/${collection.slug}`}
+                      className="cursor-pointer"
+                    >
+                      {collection.name}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
             <button
               onClick={() => scrollToSection("about")}
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
@@ -158,6 +190,40 @@ export const Header = () => {
               >
                 Shop
               </Link>
+              {/* Mobile Collections Submenu */}
+              <div className="py-2">
+                <button
+                  onClick={() => setCollectionsOpen(!collectionsOpen)}
+                  className="flex items-center justify-between w-full text-sm font-medium text-foreground"
+                >
+                  Collections
+                  <ChevronDown className={`h-4 w-4 transition-transform ${collectionsOpen ? "rotate-180" : ""}`} />
+                </button>
+                <AnimatePresence>
+                  {collectionsOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="mt-2 pl-4 flex flex-col gap-2"
+                    >
+                      {collectionLinks.map((collection) => (
+                        <Link
+                          key={collection.slug}
+                          to={`/collections/${collection.slug}`}
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            setCollectionsOpen(false);
+                          }}
+                          className="text-sm text-muted-foreground hover:text-foreground py-1"
+                        >
+                          {collection.name}
+                        </Link>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
               <button
                 onClick={() => scrollToSection("about")}
                 className="text-sm font-medium text-foreground py-2 text-left"
