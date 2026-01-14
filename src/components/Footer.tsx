@@ -29,7 +29,7 @@ export const Footer = () => {
       return;
     }
 
-    // Client-side rate limiting to prevent spam
+    // Client-side rate limiting as first line of defense
     const lastSubmit = localStorage.getItem(RATE_LIMIT_KEY);
     if (lastSubmit && Date.now() - parseInt(lastSubmit) < RATE_LIMIT_MINUTES * 60000) {
       toast.error("Please wait a few minutes before subscribing again");
@@ -38,18 +38,31 @@ export const Footer = () => {
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase
-        .from("newsletter_subscribers")
-        .insert({ email: trimmedEmail });
-
-      if (error) {
-        if (error.code === "23505") {
-          toast.info("You're already subscribed!");
-        } else {
-          throw error;
+      // Use edge function with server-side rate limiting
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-newsletter`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: trimmedEmail, source: "footer" }),
         }
+      );
+
+      const data = await response.json();
+
+      if (response.status === 429) {
+        toast.error("Please wait a few minutes before subscribing again");
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || "Subscription failed");
+      }
+
+      if (data.message === "Already subscribed") {
+        toast.info("You're already subscribed!");
       } else {
-        // Store timestamp for rate limiting
+        // Store timestamp for client-side rate limiting
         localStorage.setItem(RATE_LIMIT_KEY, Date.now().toString());
         toast.success("Thanks for subscribing! 🎉");
         setEmail("");

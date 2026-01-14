@@ -50,21 +50,29 @@ export const WelcomePopup = () => {
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from("newsletter_subscribers").insert({
-        email: trimmedEmail,
-        source: "welcome-popup",
-      });
-
-      if (error) {
-        if (error.code === "23505") {
-          // Already subscribed - still show success with discount
-          setIsSuccess(true);
-        } else {
-          throw error;
+      // Use edge function with server-side rate limiting
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-newsletter`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: trimmedEmail, source: "welcome-popup" }),
         }
-      } else {
-        setIsSuccess(true);
+      );
+
+      const data = await response.json();
+
+      if (response.status === 429) {
+        toast.error("Please wait a moment before trying again");
+        return;
       }
+
+      if (!response.ok && response.status !== 200) {
+        throw new Error(data.error || "Subscription failed");
+      }
+
+      // Success - show discount
+      setIsSuccess(true);
       
       // Mark popup as shown
       localStorage.setItem(POPUP_SHOWN_KEY, "true");

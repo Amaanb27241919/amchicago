@@ -27,19 +27,73 @@ const queryClient = new QueryClient();
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || "";
 const SITE_LOCKED = true; // Site is locked until launch
 const BYPASS_KEY = "am_employee_access";
+const ACCESS_TOKEN_KEY = "am_access_token";
 
 const App = () => {
   const [hasAccess, setHasAccess] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(true);
 
   useEffect(() => {
-    // Check if employee has already bypassed the lock
-    const bypassed = sessionStorage.getItem(BYPASS_KEY) === "true";
-    setHasAccess(bypassed);
+    const verifyAccess = async () => {
+      // Check if employee has already bypassed the lock
+      const bypassed = sessionStorage.getItem(BYPASS_KEY) === "true";
+      const token = sessionStorage.getItem(ACCESS_TOKEN_KEY);
+      
+      if (!bypassed || !token) {
+        setHasAccess(false);
+        setIsVerifying(false);
+        return;
+      }
+
+      try {
+        // Verify the token server-side
+        const response = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-employee-access?action=verify`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token }),
+          }
+        );
+
+        const data = await response.json();
+        
+        if (data.valid) {
+          setHasAccess(true);
+        } else {
+          // Token is invalid/expired - clear storage
+          sessionStorage.removeItem(BYPASS_KEY);
+          sessionStorage.removeItem(ACCESS_TOKEN_KEY);
+          setHasAccess(false);
+        }
+      } catch (error) {
+        console.error("Token verification failed:", error);
+        // On error, still allow access if bypass flag is set (graceful degradation)
+        setHasAccess(bypassed);
+      } finally {
+        setIsVerifying(false);
+      }
+    };
+
+    verifyAccess();
   }, []);
 
   const handleBypass = () => {
     setHasAccess(true);
   };
+
+  // Show nothing while verifying to prevent flash
+  if (isVerifying) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <div className="min-h-screen bg-background" />
+        </TooltipProvider>
+      </QueryClientProvider>
+    );
+  }
 
   const showComingSoon = SITE_LOCKED && !hasAccess;
 
