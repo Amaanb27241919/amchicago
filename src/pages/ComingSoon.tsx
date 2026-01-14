@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Lock } from "lucide-react";
+import { Lock, Loader2 } from "lucide-react";
 import aspireLogo from "@/assets/aspire-manifest-logo.png";
 
-const EMPLOYEE_PASSWORD = "amthreads101";
 const BYPASS_KEY = "am_employee_access";
+const ACCESS_TOKEN_KEY = "am_access_token";
 
 const floatingAnimation = {
   initial: { y: 0 },
@@ -63,6 +63,7 @@ const ComingSoon = ({ onBypass }: ComingSoonProps) => {
   const [password, setPassword] = useState("");
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -112,23 +113,70 @@ const ComingSoon = ({ onBypass }: ComingSoonProps) => {
     }
   };
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (password === EMPLOYEE_PASSWORD) {
+    if (!password) {
+      toast({
+        title: "Password required",
+        description: "Please enter the employee password.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsVerifying(true);
+
+    try {
+      // Verify password server-side
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-employee-access`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.status === 429) {
+        toast({
+          title: "Too many attempts",
+          description: "Please try again later.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!response.ok || !data.success) {
+        toast({
+          title: "Incorrect password",
+          description: "Please try again.",
+          variant: "destructive",
+        });
+        setPassword("");
+        return;
+      }
+
+      // Store the server-signed token
+      sessionStorage.setItem(ACCESS_TOKEN_KEY, data.token);
       sessionStorage.setItem(BYPASS_KEY, "true");
+      
       toast({
         title: "Access granted",
         description: "Welcome! You can now preview the site.",
       });
       onBypass?.();
-    } else {
+    } catch (error) {
+      console.error("Verification error:", error);
       toast({
-        title: "Incorrect password",
+        title: "Something went wrong",
         description: "Please try again.",
         variant: "destructive",
       });
-      setPassword("");
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -239,13 +287,15 @@ const ComingSoon = ({ onBypass }: ComingSoonProps) => {
                   onChange={(e) => setPassword(e.target.value)}
                   className="flex-1 bg-card/50 border-border/50 backdrop-blur-sm h-10 text-sm"
                   autoFocus
+                  disabled={isVerifying}
                 />
                 <Button
                   type="submit"
                   variant="outline"
                   className="h-10 px-6 text-sm"
+                  disabled={isVerifying}
                 >
-                  Enter
+                  {isVerifying ? <Loader2 className="w-4 h-4 animate-spin" /> : "Enter"}
                 </Button>
               </form>
             )}

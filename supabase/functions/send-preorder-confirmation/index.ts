@@ -1,8 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-
-
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -10,13 +10,33 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-interface PreOrderEmailRequest {
-  email: string;
-  name?: string;
-  productTitle: string;
-  variantTitle: string;
-  quantity: number;
-  price: string;
+// Input validation schema
+const PreOrderEmailSchema = z.object({
+  email: z.string().email("Invalid email address").max(255, "Email too long"),
+  name: z.string().max(100, "Name too long").optional(),
+  productTitle: z.string().min(1, "Product title required").max(500, "Product title too long"),
+  variantTitle: z.string().min(1, "Variant title required").max(200, "Variant title too long"),
+  quantity: z.number().int().positive().max(100, "Quantity too large"),
+  price: z.string().min(1, "Price required").max(50, "Price format invalid"),
+});
+
+// Rate limiting map (IP-based)
+const rateLimitMap = new Map<string, number[]>();
+
+function checkRateLimit(identifier: string, maxRequests: number = 3, windowMinutes: number = 5): boolean {
+  const now = Date.now();
+  const windowMs = windowMinutes * 60 * 1000;
+  
+  const requests = rateLimitMap.get(identifier) || [];
+  const recentRequests = requests.filter(time => now - time < windowMs);
+  
+  if (recentRequests.length >= maxRequests) {
+    return false;
+  }
+  
+  recentRequests.push(now);
+  rateLimitMap.set(identifier, recentRequests);
+  return true;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -26,8 +46,43 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, name, productTitle, variantTitle, quantity, price }: PreOrderEmailRequest = await req.json();
+    // Check for service role authentication (internal calls only)
+    const authHeader = req.headers.get('Authorization');
+    const isInternalCall = authHeader === `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`;
+    
+    // If not an internal call, require rate limiting
+    if (!isInternalCall) {
+      const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+      
+      if (!checkRateLimit(clientIp, 3, 5)) {
+        return new Response(
+          JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
+          {
+            status: 429,
+            headers: { "Content-Type": "application/json", ...corsHeaders },
+          }
+        );
+      }
+    }
 
+    const body = await req.json();
+    
+    // Validate input
+    const result = PreOrderEmailSchema.safeParse(body);
+    if (!result.success) {
+      return new Response(
+        JSON.stringify({ 
+          error: "Invalid input", 
+          details: result.error.flatten().fieldErrors 
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    const { email, name, productTitle, variantTitle, quantity, price } = result.data;
     const customerName = name || "Valued Customer";
 
     const htmlContent = `
@@ -124,22 +179,23 @@ const handler = async (req: Request): Promise<Response> => {
     const emailData = await emailResponse.json();
 
     if (!emailResponse.ok) {
-      throw new Error(emailData.message || "Failed to send email");
+      console.error("Resend API error:", emailData);
+      throw new Error("Failed to send email");
     }
 
-    console.log("Pre-order confirmation email sent successfully:", emailData);
+    console.log("Pre-order confirmation email sent successfully");
 
-    return new Response(JSON.stringify({ success: true, data: emailData }), {
+    return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
         ...corsHeaders,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error sending pre-order confirmation email:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Internal server error" }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },

@@ -75,14 +75,31 @@ const Contact = () => {
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from("contact_inquiries").insert({
-        name: result.data.name,
-        email: result.data.email,
-        subject: result.data.subject || null,
-        message: result.data.message,
-      });
+      // Use edge function with server-side rate limiting
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-contact`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: result.data.name,
+            email: result.data.email,
+            subject: result.data.subject || null,
+            message: result.data.message,
+          }),
+        }
+      );
 
-      if (error) throw error;
+      const data = await response.json();
+
+      if (response.status === 429) {
+        toast.error("Please wait a few minutes before sending another message");
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send message");
+      }
 
       localStorage.setItem(RATE_LIMIT_KEY, Date.now().toString());
       toast.success("Message sent! We'll get back to you soon.");
