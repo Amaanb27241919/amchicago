@@ -9,21 +9,21 @@ const collections = [
   {
     name: "Founders Series",
     description: "Premium essentials for the visionaries",
-    query: "Founders",
+    slug: "founders-series",
     image: foundersSeriesImage,
     imageClass: "object-cover",
   },
   {
     name: "Hope V1",
     description: "Bold statements, timeless style",
-    query: "Hope",
+    slug: "hope-v1",
     image: hopeV1Image,
     imageClass: "object-contain scale-75",
   },
   {
     name: "A | M Essentials",
     description: "Everyday luxury streetwear",
-    query: "A | M",
+    slug: "am-essentials",
     image: amEssentialsImage,
     imageClass: "object-cover",
   },
@@ -94,7 +94,7 @@ export const Collections = () => {
               transition={{ duration: 0.3 }}
             >
               <Link
-                to={`/shop?collection=${encodeURIComponent(collection.query)}`}
+                to={`/collections/${collection.slug}`}
                 className="group block relative overflow-hidden rounded-xl aspect-[4/5] hover-shine"
               >
                 {/* Background image */}

@@ -8,6 +8,7 @@ import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
+import Collection from "./pages/Collection";
 import SizeGuide from "./pages/SizeGuide";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
@@ -60,6 +61,7 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/shop" element={<Shop />} />
               <Route path="/product/:handle" element={<ProductDetail />} />
+              <Route path="/collections/:slug" element={<Collection />} />
               <Route path="/size-guide" element={<SizeGuide />} />
               <Route path="/faq" element={<FAQ />} />
               <Route path="/contact" element={<Contact />} />
