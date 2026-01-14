@@ -1,9 +1,22 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+// Validation schemas
+const PreorderStatusEnum = z.enum(["pending", "contacted", "converted", "cancelled"]);
+
+const UpdatePreorderSchema = z.object({
+  id: z.string().uuid("Invalid preorder ID format"),
+  status: PreorderStatusEnum.optional(),
+  notes: z.string().max(2000, "Notes must be less than 2000 characters").optional(),
+}).refine(
+  (data) => data.status !== undefined || data.notes !== undefined,
+  { message: "At least one field (status or notes) must be provided" }
+);
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -69,14 +82,24 @@ Deno.serve(async (req) => {
     }
 
     if (req.method === "PATCH") {
-      const { id, status, notes } = await req.json();
+      const body = await req.json();
 
-      if (!id) {
-        return new Response(JSON.stringify({ error: "Missing id" }), {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+      // Validate input with zod
+      const result = UpdatePreorderSchema.safeParse(body);
+      if (!result.success) {
+        return new Response(
+          JSON.stringify({
+            error: "Invalid input",
+            details: result.error.flatten().fieldErrors,
+          }),
+          {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
       }
+
+      const { id, status, notes } = result.data;
 
       const updateData: Record<string, unknown> = {};
       if (status !== undefined) updateData.status = status;
@@ -102,8 +125,7 @@ Deno.serve(async (req) => {
     });
   } catch (error) {
     console.error("Error:", error);
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
