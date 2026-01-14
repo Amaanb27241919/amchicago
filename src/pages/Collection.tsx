@@ -65,7 +65,11 @@ export default function Collection() {
           const query = collection.filterQuery.toLowerCase();
           
           if (collection.filterQuery === "A | M") {
-            return title.startsWith("a | m") || title.includes("a | m");
+            // A | M Essentials: products that start with "A | M" but NOT Founders or Hope
+            const startsWithAM = title.startsWith("a | m");
+            const isFounders = title.includes("founder");
+            const isHope = title.includes("hope");
+            return startsWithAM && !isFounders && !isHope;
           }
           return title.includes(query);
         });
