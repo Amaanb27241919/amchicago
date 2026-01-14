@@ -46,6 +46,9 @@ const colorMap: Record<string, string> = {
   "athletic heather": "#B8C0CC",
   "dark heather": "#4B5563",
   "dark grey heather": "#4B5563",
+  // Extended colors - Obsidian & Smog variants
+  obsidian: "#0B1215",
+  smog: "#7A7D7E",
   // Extended colors
   sand: "#C2B280",
   khaki: "#C3B091",
