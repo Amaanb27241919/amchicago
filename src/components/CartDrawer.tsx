@@ -33,7 +33,9 @@ export const CartDrawer = () => {
       await createCheckout();
       const checkoutUrl = useCartStore.getState().checkoutUrl;
       if (checkoutUrl) {
-        window.location.href = checkoutUrl;
+        // Open in new tab to avoid iframe restrictions in preview
+        window.open(checkoutUrl, '_blank');
+        setOpen(false);
       }
     } catch (error) {
       logError('Checkout failed:', error);
