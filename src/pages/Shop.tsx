@@ -31,7 +31,7 @@ const collections = [
   },
 ];
 
-const categories = ["Hoodie", "T-Shirt", "Jogger", "Crew", "Bomber Jacket", "Parka", "Long Sleeve", "Zip-Polo"];
+const categories = ["Hoodie", "T-Shirt", "Jogger", "Crew", "Zip-Polo"];
 
 type SortOption = "newest" | "price-asc" | "price-desc";
 type AvailabilityFilter = "all" | "in-stock" | "sold-out";
@@ -100,6 +100,10 @@ const Shop = () => {
         const title = product.node.title.toLowerCase();
         return selectedCategories.some(category => {
           const categoryLower = category.toLowerCase();
+          // T-Shirt category also matches "Tee" products (Oversized Tee, Box Tee, etc.)
+          if (categoryLower === "t-shirt") {
+            return title.includes("t-shirt") || title.includes("tee");
+          }
           return title.includes(categoryLower);
         });
       });
